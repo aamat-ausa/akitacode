@@ -7,7 +7,7 @@ from .conditionals import generate_combinations
 import pickle
 from queue import Queue
 
-VERSION = 2.003
+VERSION = "2.0.2-beta"
 
 class Document(object):
     """

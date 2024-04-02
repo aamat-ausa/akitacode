@@ -234,26 +234,33 @@ def create_line_state_machine():
     for_variable1 = State(
         id=5005,
         command="<variable>",
-        error_msg="Expected another output variable or close query statement.",
+        error_msg="A comma or close query statement is expected.",
         strict=False
     )
 
-    for_variable2 = State(
+    for_next_variable = State(
         id=5006,
+        command=",",
+        error_msg="Expected another output variable.",
+        required=False
+    )
+
+    for_variable2 = State(
+        id=5007,
         command="<variable>",
-        error_msg="Expected another output variable or close query statement.",
+        error_msg="A comma or close query statement is expected.",
         strict=False,
         required=False
     )
 
     for_closequery = State(
-        id=5007,
+        id=5008,
         command=")",
         error_msg="Expected ''do'' statement after close query."
     )
 
     for_do = State(
-        id=5008,
+        id=5009,
         command="do",
         error_msg="No required more arguments after ''do'' statement. ''{}'' not expected."
     )
@@ -346,11 +353,13 @@ def create_line_state_machine():
     for_instance.set_next(for_each)
     for_each.set_next(for_case)
     for_case.set_next(for_of)
-    for_of.set_next(for_variable1)
-    for_variable1.set_next(for_variable2)
+    for_of.set_next(for_openquery)
+    for_openquery.set_next(for_variable1)
+    for_variable1.set_next(for_next_variable)
     for_variable1.set_next(for_closequery)
+    for_next_variable.set_next(for_variable2)
+    for_variable2.set_next(for_next_variable)
     for_variable2.set_next(for_closequery)
-    for_variable2.set_next(for_variable2)
     for_closequery.set_next(for_do)
     for_do.set_next(root)
 
