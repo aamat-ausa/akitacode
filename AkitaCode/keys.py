@@ -3,8 +3,6 @@ class State(object):
     Representa la classe Estat de Línia. Permet crear diferents estats en funció de la línia del document específica. D'aquesta manera, es permet l'abstracció de la màquina d'estats durant la sintaxi d'una línia.
     """
 
-    
-
     def __init__(self, id:int, required:bool=True, strict:bool=True, command:str|None=None, allow_reserved_words=False, error_msg:str="Undefined error."):
         """
         Crea una instància de la classe State.
@@ -69,7 +67,7 @@ class State(object):
         self._error = True
         self._error_command = command
         return False
-    
+        
 
     def get_next(self, command:str|None):
         """

@@ -5,9 +5,10 @@ from pathlib import Path
 from .protocol import Protocol, Vector
 from .conditionals import generate_combinations
 import pickle
+import time
 from queue import Queue
 
-VERSION = "2.0.2-beta"
+VERSION = "2.0.2"
 
 class Document(object):
     """
@@ -25,7 +26,7 @@ class Document(object):
         self.__protocol_id = None
         if not Path(file).exists():
             self._error = True
-            self._error_msg = "[PathError] The selected file does not exist or is not accessible at this time."
+            self._error_msg = f"[PathError] The selected file '{str(Path(file))}' does not exist or is not accessible at this time."
         else:
             if not Path(db).exists():
                 self._error = True
@@ -123,7 +124,7 @@ class Document(object):
                     return False
             
             elif level == 5:
-                if isinstance(instance,VariableInstance): #(VariableInstance, FunctionInstance)): // Quan estiguin disponibles les funcions.
+                if isinstance(instance,(VariableInstance, FunctionInstance)): # // Quan estiguin disponibles les funcions.
                     if time_statement:
                         for_instance.nsituations += 1 
                     time_statement = False
@@ -187,12 +188,12 @@ class Document(object):
                 if instance.value is None:
                     instance.value = v_info["variable_default"]
                 try:
-                    print("Instance Value A:",instance.value, type(instance.value))
+                    # print("Instance Value A:",instance.value, type(instance.value))
                     if not isinstance(instance.value,int):
                         v_value:int = int(instance.value,0)
                     else:
                         v_value = instance.value
-                    print("Instance Value B:",instance.value)
+                    # print("Instance Value B:",instance.value)
                     instance.value = v_value
                     if nbits > 1:
                         mult = int(v_info["variable_mul"])
@@ -338,7 +339,7 @@ class Document(object):
                                 return False
                         except:
                             v_value = instance.arguments[arg]
-                            if (v_value == "True" and nbits.count("1") == 1) or (v_value == "False" and nbits.count("1") == 1):
+                            if (v_value == "True" and nbits.count("1") == 1) or (v_value == "False" and nbits.count("1") == 1) or (v_value is None):
                                 instance.arguments[arg] = 1 if v_value == "True" else 0
                             elif v_value in list(const_vars.keys()):
                                 # Busquem la informació de la variable de la qual es vol afegir el valor.
@@ -360,7 +361,8 @@ class Document(object):
                                     q.put("[ValueError <Line {line}>] Value of {value} cannot be used as the value of argument {name} because they differ in the type of variable.".format(
                                         line=instance.nline, value=v_value, name=instance.name))
                                     return False
-                                instance.arguments[arg] = const_vars[v_value]
+                                if not inside_for:
+                                    instance.arguments[arg] = const_vars[v_value]
                             elif v_value not in list(const_vars.keys()):
                                 q.put("[AssignmentError <Line {line}>] Value {value} is not defined previously and cannot be assigned.".format(
                                     line=instance.nline, value=v_value, name=instance.name))
@@ -379,6 +381,7 @@ class Document(object):
                         q.put("[VariableError <Line {line}>] Variable ''{name}'' is not defined in ''{protocol}'' protocol.".format(
                             line=instance.nline, name=item, protocol=self.__db.get_protocol_name(self.__protocol_id)))
                         return False
+                    # print(instance.iter)
                     v_info = self.__db.get_info_from_variable(v_id)["variable_direction"]
                     if v_info == 1:
                         q.put("[ForVariableError <Line {line}>] Variable ''{name}'' is defined as input, not as output. For instance not allow input variables.".format(
@@ -423,7 +426,15 @@ class Document(object):
         for_number_of_situations:int = 0
         for_situations:list[dict]|None = None
         instance_level = 0
+        timeTotal = 0
+        timeA = time.perf_counter()
         for instance in self.__document:
+
+            if time.perf_counter()-timeA >= 1:
+                timeTotal += time.perf_counter()-timeA
+                timeA = time.perf_counter()
+                print(timeTotal)
+
             if isinstance(instance,ProtocolInstance):
                 p_id = self.__db.get_protocol_id(instance.name)
                 protocol = Protocol(instance.name)
@@ -449,11 +460,22 @@ class Document(object):
                             for_situations[i][instance.name] = for_situations[i][instance.value]
 
             elif isinstance(instance,FunctionInstance):
-                exportable += [Vector(instance.ids,"F",None)]
-                for arg in tuple(instance.arguments.keys()):
-                    exportable += [Vector(ids=self.__db.get_argument_id(instance.ids,arg),data_type="A",value=instance.arguments[arg])]
-
-                    # #######   Falta acabar aquest punt
+                if not in_for:
+                    exportable += [Vector(instance.ids,"F",None)]
+                    for arg in tuple(instance.arguments.keys()):
+                        exportable += [Vector(ids=self.__db.get_argument_id(instance.ids,arg),data_type="A",value=instance.arguments[arg])]
+                else:
+                    # Recorrem el llistat de situacions
+                    for i in range(current_for_situation-1,len(for_situations),for_number_of_situations):
+                        for_situations[i]["**functions"][instance.name] = {}
+                        for argument in tuple(instance.arguments.keys()):
+                            if isinstance(instance.arguments[argument],int):
+                                for_situations[i]["**functions"][instance.name][argument] = instance.arguments[argument]
+                            else:
+                                for_situations[i]["**functions"][instance.name][argument] = for_situations[i][instance.arguments[argument]]
+                            # Es possible que pugui donar error d'indexació quan s'intenta afegir el valor d'una variable anterior definida a l'hora de passar-ho com argument.
+                            # Intentar detectar l'error i, si es possible, manipular-ho amb conseqüència.
+                    # #######  Revisar!!
 
             elif isinstance(instance, EndInstance):
                 instance_level -=1
@@ -462,6 +484,10 @@ class Document(object):
                     curr_env_name = None
                     # Itera per totes les situacions
                     for i in range(0, len(for_situations)):
+                        if time.perf_counter()-timeA >= 1:
+                            timeTotal += time.perf_counter()-timeA
+                            timeA = time.perf_counter()
+                            q.put(timeTotal)
                         # Busca la primera situació de cada entorn i inicialitza l'entorn.
                         if i % for_number_of_situations == 0:
                             exportable += [Vector(ids=curr_env_name,data_type="E",value=None)]
@@ -493,7 +519,7 @@ class Document(object):
                                 exportable += [Vector(
                                     ids=fn_arg_id[arg],
                                     data_type="A",
-                                    value=sit_fn[fn][fn_arg_names[arg]]
+                                    value=for_situations[i]["**functions"][fn][fn_arg_names[arg]]
                                 )]
 
                         

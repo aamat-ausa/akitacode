@@ -156,7 +156,8 @@ class ForInstance(Instance):
         try:
             open_query = args.index("(")
             close_query = args.index(")")
-            self.iter = args[open_query+1:close_query]
+            args = args[open_query+1:close_query]
+            self.iter=[args[e] for e in range(0,close_query-open_query,2)]
         except:
             self.error = True
             self.error_msg = "For description error."
