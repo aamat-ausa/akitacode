@@ -1,8 +1,20 @@
 # AkitaCode Python Library
 
-Documentation is pending to be added.
+You can consult the documentation for this library in the [official GitHub repository](https://github.com/alexamatausa/akitacode "AkitaCode GitHub repository").
+
 
 ## History log
+
+### Version 2.0.3
+
+- The ``Messages`` module is added to the library that allows better management of messages sent and received between threads.
+
+- Current implementations remain backward compatible with previous versions, since the ``Message`` superclass has a STR method.
+
+- Status messages are added to the methods of the ``Document`` class.
+
+- The `make()` method is added, which allows all methods of the ``Document`` class to be executed. To ensure proper compilation, we highly recommend using this method.
+
 
 ### Version 2.0.2
 

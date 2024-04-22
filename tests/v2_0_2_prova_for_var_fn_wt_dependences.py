@@ -34,7 +34,4 @@ if fase_A:
             if fase_C == 0:
                 f = pickle.load(open(out_filename,"rb"))
                 f = f["data"]
-                # for l in f:
-                #     print(repr(l)+"\r")
-                # print(f)
             print(msg)

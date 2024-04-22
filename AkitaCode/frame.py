@@ -1,6 +1,3 @@
-"""
-Àlex Amat - Versión 0.1.0256
-"""
 from .data import *
 from .protocol import Protocol, Vector
 

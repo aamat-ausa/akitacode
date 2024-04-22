@@ -1,6 +1,7 @@
 from .keys import State
 from .line_state_machine import create_line_state_machine
 from .instances import *
+from .messages import StatusMessage
 """
 Este modulo contine la clase Line que nos ayuda, primeramente a validar y comprobar 
 la sintaxis de una forma mucho más cómoda, dividiendo en secciones las líneas de código 
@@ -90,11 +91,19 @@ class Line(object):
         :rtype: str (o None)
         """
         if self._error:
-            if not self._used_reserved_word:
-                return "[SyntaxError <Line {line}>] {error_msg}".format(line=self._number_line, error_msg=self._error_msg)
-            else:
-                return "[SyntaxError <Line {line}>] {error_msg}".format(line=self._number_line, error_msg=self._error_msg)
+            return StatusMessage(
+                msgtype="SyntaxError",
+                msg=self._error_msg,
+                return_code=6,
+                nline=self._number_line
+            )
         else:
+            return StatusMessage(
+                msgtype="Success",
+                msg="No errors detected.",
+                return_code=7,
+                nline=self._number_line
+            )
             return "[Success <Line {line}>] No errors detected.".format(line=self._number_line)
 
 
