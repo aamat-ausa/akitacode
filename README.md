@@ -5,6 +5,11 @@ You can consult the documentation for this library in the [official GitHub repos
 
 ## History log
 
+### Version 2.0.4
+
+- Solved dependences of ``Messages`` module.
+
+
 ### Version 2.0.3
 
 - The ``Messages`` module is added to the library that allows better management of messages sent and received between threads.
