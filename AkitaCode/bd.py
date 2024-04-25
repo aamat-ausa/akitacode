@@ -137,7 +137,7 @@ class Database(object):
         :return: Codi de retorn.
         :rtype: int
         """
-        p_name = p_name.replace(" ","").upper()
+        p_name = p_name.replace(" ","_")
         if len(p_name) > 2**6 or len(p_name) < 4:
             return 1
         with sql.connect(self.db) as conn:
@@ -164,7 +164,7 @@ class Database(object):
         :return: Retorna 0 si s'ha realitzat la modificació, 1 o 2 si hi ha hagut algun errors.
         :rtype: int
         """
-        p_name = p_name.replace(" ","").upper()
+        p_name = p_name.replace(" ","_")
         if len(p_name) > 2**6 or len(p_name) < 4:
             return 1
         with sql.connect(self.db) as conn:
@@ -220,7 +220,7 @@ class Database(object):
         :return: Retorna 0 si s'ha actualitzat correctament, 1 o 2 altrament.
         :rtype: int
         """
-        p_name = p_name.replace(" ","").upper()
+        p_name = p_name.replace(" ","_")
         if len(p_name) > 2**6 or len(p_name) < 4:
             return 1
         with sql.connect(self.db) as conn:
@@ -530,7 +530,7 @@ class Database(object):
         """
         #1 Verifica que no hi hagi errors en el nom de la variable.
         var_name = ""
-        for e in v_name.upper():
+        for e in v_name:
             if e == " ":
                 pass
             elif e.isalpha() or e.isnumeric():
@@ -650,7 +650,7 @@ class Database(object):
         """
         #1 Verifica que no hi hagi errors en el nom de la variable.
         var_name = ""
-        for e in v_name.upper():
+        for e in v_name:
             if e == " ":
                 pass
             elif e.isalpha() or e.isnumeric():
@@ -1467,7 +1467,7 @@ class Database(object):
         """
         #1 Verifica que no hi hagi errors en el nom de la function.
         fun_name = ""
-        for e in f_name.upper():
+        for e in f_name:
             if e == " ":
                 pass
             elif e.isalpha() or e.isnumeric():
@@ -1529,7 +1529,7 @@ class Database(object):
         """
         #1 Verifica que no hi hagi errors en el nom de la function.
         var_name = ""
-        for e in f_name.upper():
+        for e in f_name:
             if e == " ":
                 pass
             elif e.isalpha() or e.isnumeric():
@@ -1917,7 +1917,7 @@ class Database(object):
         #1 Verifica que no hi hagi errors en el nom de la variable.
         var_name = ""
         
-        for e in a_name.upper():
+        for e in a_name:
             if e == " ":
                 pass
             elif e.isalpha() or e.isnumeric():
@@ -1993,7 +1993,7 @@ class Database(object):
         """
         #1 Verifica que no hi hagi errors en el nom de la variable.
         var_name = ""
-        for e in a_name.upper():
+        for e in a_name:
             if e == " ":
                 pass
             elif e.isalpha() or e.isnumeric():

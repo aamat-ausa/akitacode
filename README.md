@@ -1,9 +1,16 @@
 # AkitaCode Python Library
 
-You can consult the documentation for this library in the [official GitHub repository](https://github.com/alexamatausa/akitacode "AkitaCode GitHub repository").
+You can consult the documentation for this library in the [Wiki page of the official GitHub repository](https://github.com/alexamatausa/akitacode "AkitaCode GitHub repository").
 
 
 ## History log
+
+### Version 2.0.5
+
+- Fixed the error during the generation of the AKITA file. No data was imported into the protocol datablock. The protocol datablock was not blocked.
+
+- The automatic capitalization rule is disabled when adding or modifying protocols, variables, functions, and arguments.
+
 
 ### Version 2.0.4
 

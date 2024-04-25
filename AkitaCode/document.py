@@ -675,6 +675,10 @@ class Document(object):
             if isinstance(instance,ProtocolInstance):
                 p_id = self.__db.get_protocol_id(instance.name)
                 protocol = Protocol(instance.name)
+                protocol.import_protocol(
+                    db=self.__db,
+                    p_id=p_id
+                    )
                 instance_level += 1
 
             elif isinstance(instance, EnviromentInstance):
