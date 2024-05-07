@@ -1,15 +1,15 @@
 
 from .line import *
 from .bd import *
-from pathlib import Path
-from .protocol import Protocol, Vector
-from .conditionals import generate_combinations
+from .protocol import *
 from .messages import StatusMessage, EOPMessage
+from .conditionals import generate_combinations
+from pathlib import Path
 import pickle
 import time
 from queue import Queue
 
-VERSION = "2.0.3"
+VERSION = "2.0.6"
 
 
 class Document(object):
@@ -670,7 +670,6 @@ class Document(object):
             if time.perf_counter()-timeA >= 1:
                 timeTotal += time.perf_counter()-timeA
                 timeA = time.perf_counter()
-                # print(timeTotal)
 
             if isinstance(instance,ProtocolInstance):
                 p_id = self.__db.get_protocol_id(instance.name)
@@ -682,16 +681,16 @@ class Document(object):
                 instance_level += 1
 
             elif isinstance(instance, EnviromentInstance):
-                exportable += [Vector(instance.name,"E",None)]
+                exportable += [Vector(instance.name,VECTOR_ENVIROMENT_DATATYPE,None)]
                 instance_level +=1
 
             elif isinstance(instance, SituationInstance):
-                exportable += [Vector(instance.name, "S", instance.time)]
+                exportable += [Vector(instance.name, VECTOR_SITUATION_DATATYPE, instance.time)]
                 instance_level +=1
 
             elif isinstance(instance,VariableInstance):
                 if not in_for:
-                    exportable += [Vector(ids=instance.ids,data_type="R" if instance.is_response else "T", value=instance.value)]
+                    exportable += [Vector(ids=instance.ids,data_type=VECTOR_RX_VARIABLE_DATATYPE if instance.is_response else VECTOR_TX_VARIABLE_DATATYPE, value=instance.value)]
                 else:
                     if isinstance(instance.value,int):
                         for i in range(current_for_situation-1,len(for_situations),for_number_of_situations):
@@ -702,9 +701,9 @@ class Document(object):
 
             elif isinstance(instance,FunctionInstance):
                 if not in_for:
-                    exportable += [Vector(instance.ids,"F",None)]
+                    exportable += [Vector(instance.ids,VECTOR_FUNCTION_DATATYPE,None)]
                     for arg in tuple(instance.arguments.keys()):
-                        exportable += [Vector(ids=self.__db.get_argument_id(instance.ids,arg),data_type="A",value=instance.arguments[arg])]
+                        exportable += [Vector(ids=self.__db.get_argument_id(instance.ids,arg),data_type=VECTOR_ARGUMENT_DATATYPE,value=instance.arguments[arg])]
                 else:
                     # Recorrem el llistat de situacions
                     for i in range(current_for_situation-1,len(for_situations),for_number_of_situations):
@@ -716,7 +715,6 @@ class Document(object):
                                 for_situations[i]["**functions"][instance.name][argument] = for_situations[i][instance.arguments[argument]]
                             # Es possible que pugui donar error d'indexació quan s'intenta afegir el valor d'una variable anterior definida a l'hora de passar-ho com argument.
                             # Intentar detectar l'error i, si es possible, manipular-ho amb conseqüència.
-                    # #######  Revisar!!
 
             elif isinstance(instance, EndInstance):
                 instance_level -=1
@@ -731,9 +729,9 @@ class Document(object):
                             q.put(timeTotal)
                         # Busca la primera situació de cada entorn i inicialitza l'entorn.
                         if i % for_number_of_situations == 0:
-                            exportable += [Vector(ids=curr_env_name,data_type="E",value=None)]
+                            exportable += [Vector(ids=curr_env_name,data_type=VECTOR_ENVIROMENT_DATATYPE,value=None)]
                         # Creem una nova situació per cada diccionari de la llista.
-                        exportable += [Vector(ids=0,data_type="S",value=for_situations[i]["**time"])]
+                        exportable += [Vector(ids=0,data_type=VECTOR_SITUATION_DATATYPE,value=for_situations[i]["**time"])]
                         # Cerquem totes les variables
                         sit_variables = [element for element in list(for_situations[i].keys()) if element not in ("**time","**functions")]
                         # Creem els Vectors en funció del tipus de variable.
@@ -741,7 +739,7 @@ class Document(object):
                             var_id = self.__db.get_variable_id(self.__protocol_id,var)
                             exportable += [Vector(
                                 ids=var_id,
-                                data_type= "T" if self.__db.get_info_from_variable(var_id)["variable_direction"] == 0 else "R",
+                                data_type= VECTOR_TX_VARIABLE_DATATYPE if self.__db.get_info_from_variable(var_id)["variable_direction"] == 0 else VECTOR_RX_VARIABLE_DATATYPE,
                                 value=for_situations[i][var])]
                             
                         # Creem els Vectors de les funcions
@@ -751,7 +749,7 @@ class Document(object):
                             fn_id = self.__db.get_function_id(self.__protocol_id,fn)
                             exportable += [Vector(
                                 ids=fn_id,
-                                data_type="F",
+                                data_type=VECTOR_FUNCTION_DATATYPE,
                                 value=None
                             )]
                             fn_arg_names = self.__db.get_arguments_from_function(fn_id)
@@ -759,7 +757,7 @@ class Document(object):
                             for arg in range(len(fn_arg_id)):
                                 exportable += [Vector(
                                     ids=fn_arg_id[arg],
-                                    data_type="A",
+                                    data_type=VECTOR_ARGUMENT_DATATYPE,
                                     value=for_situations[i]["**functions"][fn][fn_arg_names[arg]]
                                 )]
 
@@ -843,41 +841,3 @@ class Document(object):
             EOPMessage()
         )
         return fase_A
-
-
-if __name__ == "__main__":
-    # Create a database instance.
-    # import config_mod
-    import queue
-    q = queue.Queue()
-    # db = config_mod.get_db_path()
-    db = "C:/Users/aamat/.akitacan/data.db"
-    # Get path of file.
-    filename = "prova_for_time"
-    in_filename = "E:/Akitacan/dev/AkitaCode/test/{}{}".format(filename,".atd")
-    out_filename = "E:/Akitacan/dev/AkitaCode/test/{}{}".format(filename,".akita")
-
-    # Create a document instance.
-    doc = Document(in_filename, db)
-
-    # print(doc._error)
-    # print(doc._error_msg) if doc._error_msg is not None else print("Success!!")
-
-    fase_A = doc.check_syntax(q)
-    print("FASE A: {}".format(fase_A))
-    print(q.get())
-    if fase_A:
-        fase_B = doc.check_spell(q)
-        print("FASE B: {}".format(fase_B))
-        print(q.get())
-        if fase_B:
-            fase_C = doc.makec(q,out_filename,autoclose=True)
-            print("FASE C: {}".format(fase_C))
-            print(q.get())
-            if fase_C == 0:
-                f = pickle.load(open(out_filename,"rb"))
-                f = f["data"]
-                for l in f:
-                    print(repr(l)+"\r")
-                # print(f)
-            print(q.get())

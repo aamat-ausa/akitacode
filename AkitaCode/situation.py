@@ -1,5 +1,6 @@
 from .frame import Frame
 from .protocol import Vector, Protocol
+from .protocol import VECTOR_FUNCTION_DATATYPE
 
 
 class Situation(object):
@@ -36,7 +37,7 @@ class Situation(object):
         :rtype: int
         """
         info = protocol.search(vector)
-        if vector.datatype != "F":
+        if vector.datatype != VECTOR_FUNCTION_DATATYPE:
             for e in self._frames:
                 if info["msg_id"] == e.get_can_id():
                     return e.add_to_frame(vector,protocol)
@@ -116,22 +117,3 @@ class Situation(object):
                 if not frame.get_is_function():
                     txframes += [frame]
         return txframes
-
-
-
-if __name__ == "__main__":
-    pass
-    # s = Situation("ExampleA")
-    # a = Data("HOLA", 184, mask=65283, n_bits=10, value=127)
-    # b = Data("ALOHA", 184, mask=2**16, n_bits=1, value=1)
-    # c = Data("ADEU", 587, 65283, 10, value=78, is_function=True)
-    # f = Frame()
-    # g = Frame()
-    # print(f.add_to_frame(a))
-    # print(f.add_to_frame(b))
-    # print(g.add_to_frame(c))
-    # print(s.add_to_situation(a))
-    # print(s.add_to_situation(b))
-    # print(s.add_to_situation(b))
-    # print(s._frames[0])
-    # print(s._frames[0].get_datalist())

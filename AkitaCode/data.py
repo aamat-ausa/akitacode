@@ -220,27 +220,6 @@ class Data(object):
         :rtype: str
         """
         return "Data Object: "+self.name+" takes up "+str(len(self.mask))+"bits."
-    
-
-    # def get_all(self):
-    #     """
-    #     Retorna en format tupla i en el ordre següent la informació emmagatzemada a l'objecte Data.
-        
-    #     - El nom de la variable o funció.
-    #     - El valor esperat abans de ser encapsulat.
-    #     - Si la variable o funció és complement a dos o no.
-    #     - El nombre de bits de la variable o funció en la trama.
-    #     - L'objecte Mask de la variable o funció.
-    #     - L'identificador de trama CAN.
-    #     - Si la variable és de resposta o no. (Per les funcions, aquest paràmetre sempre és False)
-    #     - Si l'objecte Data és una funció.
-    #     - El valor de l'objecte Data un cop encapsulat.
-        
-    #     :return: Retorna tota l'informació de l'objecte Data.
-    #     :rtype: tuple
-    #     """
-    #     return self.var_name, self.value, self.is_signed, self.n_bits, self.mask, self.can_id, self.is_response, self.is_function, self.frame_value
-
 
 
 class Argument(Data):
@@ -264,32 +243,3 @@ class Function(object):
     def __init__(self,ids:int,name:str) -> None:
         self.ids:int = ids
         self.name:str = name
-        # self.arguments:list[Argument] = []
-
-
-
-
-
-
-if __name__ == "__main__":
-    d = Data("HOLA", 184, 65280, 8, value=126, is_signed=True)
-    p = Data("ADEU", 587, 65283, 10, value=78, is_function=True)
-    print(d.get_name(), d.get_can_id(), d.get_frame_value(), d.get_is_function(), d.get_mask_value(), d.get_is_function()) # expected HOLA 184 32256 False b'\x00\x00\x00\x00\x00\x00\xff\x00' False
-    print(p.get_name(), p.get_can_id(), p.get_frame_value(), p.get_is_function(), p.get_mask_value(), p.get_is_function()) # expected ADEU 587 4866 True b'\x00\x00\x00\x00\x00\x00\xff\x03' True
-    # Test of uncapsulate()
-    a = Data("HOLA", 184, mask=65283, n_bits=10, value=-127, is_signed=True, is_response=True)
-    b = Data("ALOHA", 184, mask=250, n_bits=6, value=48, is_response=True)
-    print(a._uncapsulate((2**15)+3))         # expected -509
-    print(a._uncapsulate(57345))             # expected -127
-    # 1110000000000001 = 57345              // Value of received frame
-    # 1111111100000011 = 65283              // Mask of a Data object.
-    # 11100000------01 = ?                  // Execute uncapsulate.
-    # 1110000001 (signed) = -127            // Extracted value
-    print(b._uncapsulate(197))               # expected 48
-    # 11000101 = 197                        // Value of received frame.
-    # 11111010 = 250                        // Mask of b Data object.
-    # 11000-0- = ?                          // Execute uncapsulate.
-    # 110000 = 48                           // Extracted value.
-    print(a._uncapsulate(57345) == a.get_expected_value())
-    print(b._uncapsulate(197) == b.get_expected_value())
-    print(d.get_value_is_signed())

@@ -104,7 +104,6 @@ class Line(object):
                 return_code=7,
                 nline=self._number_line
             )
-            return "[Success <Line {line}>] No errors detected.".format(line=self._number_line)
 
 
     def ignore(self) -> bool:
@@ -185,52 +184,3 @@ class Line(object):
         :rtype: str
         """
         return str(self.get_key())+" "+str(self.get_variable())+" "+str(self.get_value())
-
-
-if __name__ == "__main__":
-    import time
-    linee = "fn hhh ( aaa 111 | bbb 222 | ccc 333 )"
-    a = time.time()
-    # for e in list(range(0,1000)):
-    l1 = Line(n=1,
-            line=linee)
-    b = time.time()
-
-    print(l1.get_error())
-    # print(b-a)
-    # print(linee)
-    # print(l1.get_error())
-    # e1 = l1.convert()
-    # print(e1.get_error())
-    # print(l1._init_state._next)
-    # v1:FunctionInstance = l1.convert()
-    # print(v1.is_error())
-    # print(v1.get_error())
-    # print(v1.arguments)
-
-
-    # x="#intermi7tents" 
-    # y="$TEST_NAME"
-    # z="@i new_situation = 449 "
-    # a="#holiis="
-    # b="variable"
-    # c="holiis=*"
-    # Ke = Keys()
-    # line=Line(n=7,line=x,keys=Ke)
-    # #print(line.is_an_error())
-    # #print(line.get_error())
-    # Ke2 = Keys()
-    # line2=Line(n=88,line=c,keys=Ke2)
-    # #print(line2.is_an_error())
-    # #print(line2.get_error())
-    # #print(line.get_index())
-    # #print(line.get_key())
-    # #print(line.get_variable())
-    # #print(line.get_value())
-    # print(z)
-    # #print(line2.get_index())
-    # print(line2.get_key())
-    # print(line2.get_variable())
-    # print(line2.get_value())
-    # print(line2.get_error())
-    # print(line2)

@@ -119,28 +119,3 @@ class Bus(object):
         self.notifier.stop()
         # Trenca la connexió del bus
         self.bus.shutdown()
-    
-        
-if __name__ == "__main__":
-    #pcan = Bus(filters=[{"can_id": 0x150, "can_mask": 0xFF9, "extended": False},])
-    pcan = Bus(bitrate=250000)
-    id_msg = 0x100
-    payload_msg = [1,2,3,4,5,6,7,8]
-    pcan.flush_buffer()
-    for e in list(range(0,100)):
-        if pcan.send_message(id_msg, payload_msg):
-            print("Success!")
-        else:
-            print("Failed!")
-    """
-    try:
-        pcan.flush_buffer()
-        while(True):
-            msg_received = pcan.read_input()
-            if msg_received != None:
-                print(list(msg_received.data))
-                print(msg_received)
-    except:
-        logging.info("Sortint de l'aplicatiu.")
-        pcan.cleanup()
-    """

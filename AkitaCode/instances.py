@@ -1,7 +1,5 @@
-import random
-import os
+import secrets
 
-random.seed(os.getpid()*2)
 
 class UnknownCommand(Exception):
     """
@@ -11,7 +9,7 @@ class UnknownCommand(Exception):
         self.message = message
 
     def __str__(self) -> str:
-        return "UnknownCommand Exception launched: {}".format(self.message)
+        return f"UnknownCommand Exception launched: {self.message}"
 
 
 class Instance(object):
@@ -22,7 +20,6 @@ class Instance(object):
       self.error = False
       self.error_msg = None
       self.nline = nline
-
 
   def is_error(self) -> bool:
       return self.error
@@ -38,17 +35,17 @@ class SkipInstance(Instance):
     """
     def __init__(self, nline: int) -> None:
         super().__init__(nline)
-        pass
 
 
 class ErrorInstance(Instance):
     """
-    Indica que una línia conté errors i que no s'ha pogut convertir. Preveu l'execució malintencionada de comanda ''Line.convert()''.
+    Indica que una línia conté errors i que no s'ha pogut convertir.
+    Preveu l'execució malintencionada de comanda ''Line.convert()''.
     """
     def __init__(self,nline:int,error_msg:str) -> None:
         super().__init__(nline=nline)
         self.error = True
-        self.error_msg = "[CompilationError <Line {}>] Line cannot be converted because it contains errors.\n{}".format(nline,error_msg)
+        self.error_msg = f"[CompilationError <Line {nline}>] Line cannot be converted because it contains errors.\n{error_msg}"
 
 
 class UndefinedInstance(Instance):
@@ -58,7 +55,7 @@ class UndefinedInstance(Instance):
     def __init__(self,nline:int) -> None:
         super().__init__(nline)
         self.error = True
-        self.error_msg = "[CompilationError <Line {}>] Undefined or unknown line type. Report this bug via email to aamat@ausa.com.".format(nline)
+        self.error_msg = f"[CompilationError <Line {nline}>] Undefined or unknown line type. Report this bug via email to aamat@ausa.com."
 
 
 class ProtocolInstance(Instance):
@@ -71,7 +68,7 @@ class ProtocolInstance(Instance):
         self.name = None
         try:
             self.name = line_parsed[2]
-        except:
+        except Exception:
             self.error = True 
 
 
@@ -132,7 +129,7 @@ class FunctionInstance(Instance):
             
             for e in tuple(range(0,len(query)-1,2)):
                 self.arguments[query[e]] = query[e+1]
-        except:
+        except Exception:
             self.error = True
             self.error_msg = "Function description error."
 
@@ -158,7 +155,7 @@ class ForInstance(Instance):
             close_query = args.index(")")
             args = args[open_query+1:close_query]
             self.iter=[args[e] for e in range(0,close_query-open_query,2)]
-        except:
+        except Exception:
             self.error = True
             self.error_msg = "For description error."
 
@@ -181,7 +178,7 @@ class TimeInstance(Instance):
         try:
             self.time = args[1]
             self.time = int(self.time)
-        except:
+        except Exception:
             self.error = True
             self.error_msg = "[TimeInstanceError] Invalid time (ms) format. Only accepts integer values in decimal."
 
@@ -206,11 +203,11 @@ class SituationInstance(Instance):
         try:
             self.name = args[2]
             if self.name == "_":
-                self.name = hex(random.randint(0,2**48))[2:]
+                self.name = secrets.token_hex(3).capitalize()# self.name = hex(random.randint(0,2**48))[2:]
                 
             self.time = args[5]
             self.time = int(self.time)
-        except:
+        except Exception:
             self.error = True
             self.error_msg = "[VariableError] Invalid time (ms) format. Only accepts integer values in decimal."
 
@@ -234,8 +231,8 @@ class EnviromentInstance(Instance):
         try:
             self.name = args[2]
             if self.name == "_":
-                self.name = hex(random.randint(0,2**48))[2:]
-        except:
+                self.name = secrets.token_hex(3).capitalize() # self.name = hex(random.randint(0,2**48))[2:]
+        except Exception:
             self.error = True
 
 
@@ -248,9 +245,5 @@ class EndInstance(Instance):
         try:
             if line_parsed[0] != "end":
                 self.error = True
-        except:
+        except Exception:
             self.error = True
-
-
-if __name__ == "__main__":
-    pass

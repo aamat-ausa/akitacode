@@ -1,5 +1,12 @@
 from .bd import Database
 
+VECTOR_ENVIROMENT_DATATYPE = "F"
+VECTOR_SITUATION_DATATYPE = "S"
+VECTOR_TX_VARIABLE_DATATYPE = "T"
+VECTOR_RX_VARIABLE_DATATYPE = "R"
+VECTOR_FUNCTION_DATATYPE = "F"
+VECTOR_ARGUMENT_DATATYPE = "A"
+
 class Vector(object):
     """
     Objecte que conté la informació mínima per dur a terme una execució mitjançant l'arquitectura relacional per vectors.
@@ -65,22 +72,22 @@ class Protocol(object):
         :rtype: dict
         """
         if self.__lock:
-            if vector.datatype == "F":
+            if vector.datatype == VECTOR_FUNCTION_DATATYPE:
                 if vector.ids in tuple(self.__functions.keys()):
                     return self.__functions[vector.ids]
                 return False
 
-            elif vector.datatype == "T":
+            elif vector.datatype == VECTOR_TX_VARIABLE_DATATYPE:
                 if vector.ids in tuple(self.__variables_tx.keys()):
                     return self.__variables_tx[vector.ids]
                 return False
 
-            elif vector.datatype == "R":
+            elif vector.datatype == VECTOR_RX_VARIABLE_DATATYPE:
                 if vector.ids in tuple(self.__variables_rx.keys()):
                     return self.__variables_rx[vector.ids]
                 return False
                 
-            elif vector.datatype == "A":
+            elif vector.datatype == VECTOR_ARGUMENT_DATATYPE:
                 if vector.ids in tuple(self.__arguments.keys()):
                     return self.__arguments[vector.ids]
                 return False
@@ -100,8 +107,3 @@ class Protocol(object):
         self.__arguments = full_protocol[3]
         self.__lock = True
         return 0
-    
-
-
-if __name__ == "__main__":
-    pass

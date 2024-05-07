@@ -1,5 +1,8 @@
+TESTBENCH_RESULT_OK = "ok"
+TESTBENCH_RESULT_NOK = "nok"
+
 class Information(object):
-    def __init__(self, ids, situation, type, msg_id, frame, mask, var, expected, val, result):
+    def __init__(self, ids, situation, type, msg_id, frame, mask, var, expected, val):
         """
         Crea una instancia de la classe Information amb les dades assignades.
 
@@ -21,8 +24,6 @@ class Information(object):
         :type expected: int
         :param val: Valor que s'ha obtingut del sistema de testeig.
         :type val: int
-        :param result: Indica si el resultat és satisfactori o no.
-        :type result: bool
         """
         self.ids = ids
         self.situation = situation
@@ -33,4 +34,22 @@ class Information(object):
         self.var = var
         self.expected = expected
         self.val = val
-        self.result = result
+        self.result = TESTBENCH_RESULT_OK if self.expected == self.val else TESTBENCH_RESULT_NOK
+
+
+    def __dict__(self):
+        """
+        Retorna un diccionari amb les dades que conté la classe Information.
+        """
+        d = dict()
+        d["Situation"] = self.situation
+        d["Type"] = self.type
+        d["COB ID"] = hex(self.msg_id)
+        d["Variable Name"] = self.var
+        d["Expected Value"] = self.expected
+        d["Received Value"] = self.val
+        d["Check"] = self.result
+        return d
+    
+    def dict(self):
+        return self.__dict__()

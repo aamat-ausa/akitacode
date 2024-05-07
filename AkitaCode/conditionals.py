@@ -72,29 +72,29 @@ def filtrar_combinaciones_mixtas(combinaciones, condiciones):
     return combinaciones_filtradas
 
 # Ejemplo de uso
-if __name__ == "__main__":
-    import time
-    # from config_mod import get_db_path
-    # db = Database(get_db_path())
-    protocol = 1
-    db = "C:/Users/aamat/.akitacan/data.db"
+# if __name__ == "__main__":
+#     import time
+#     # from config_mod import get_db_path
+#     # db = Database(get_db_path())
+#     protocol = 1
+#     db = "C:/Users/aamat/.akitacan/data.db"
 
-    variables = ["BAT_NUMBER_OF_BATTERIES", "BAT_VIRTUAL_BATTERY_SOC"]
-    # variables = ["BAT_VIRTUAL_BATTERY_SOC"]
-    condiciones = [
-        # ("A", "==", 1, None),
-        ("BAT_NUMBER_OF_BATTERIES", "==", 0, "AND"),
-        ("BAT_VIRTUAL_BATTERY_SOC", "==", 1, "OR"),
-        ("BAT_NUMBER_OF_BATTERIES", "==", 1, "AND"),
-        ("BAT_VIRTUAL_BATTERY_SOC", "==", 0, None)
-    ]
-    init_time = time.time()
-    combinaciones = generate_combinations(db,protocol,variables,1)
-    print(combinaciones)
-    combinaciones_filtradas = filtrar_combinaciones_mixtas(combinaciones, condiciones)
-    print(combinaciones_filtradas)
-    print(time.time()-init_time)
-    with open("E:/prova_autogen.txt", "w") as f:
-        for e in combinaciones:
-            f.write(str(e)+"\n")
+#     variables = ["BAT_NUMBER_OF_BATTERIES", "BAT_VIRTUAL_BATTERY_SOC"]
+#     # variables = ["BAT_VIRTUAL_BATTERY_SOC"]
+#     condiciones = [
+#         # ("A", "==", 1, None),
+#         ("BAT_NUMBER_OF_BATTERIES", "==", 0, "AND"),
+#         ("BAT_VIRTUAL_BATTERY_SOC", "==", 1, "OR"),
+#         ("BAT_NUMBER_OF_BATTERIES", "==", 1, "AND"),
+#         ("BAT_VIRTUAL_BATTERY_SOC", "==", 0, None)
+#     ]
+#     init_time = time.time()
+#     combinaciones = generate_combinations(db,protocol,variables,1)
+#     print(combinaciones)
+#     combinaciones_filtradas = filtrar_combinaciones_mixtas(combinaciones, condiciones)
+#     print(combinaciones_filtradas)
+#     print(time.time()-init_time)
+#     with open("E:/prova_autogen.txt", "w") as f:
+#         for e in combinaciones:
+#             f.write(str(e)+"\n")
 

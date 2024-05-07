@@ -1,8 +1,10 @@
+MAX_MASK_VALUE = 2**64
+
 class Mask(object):
     """
     La classe "Mask" proporciona les funcionalitats necessàries per a poder comprovar i encapsular la informació que es vol validar en una futura trama. És principalment responsable de verificar que no hi hagi conflictes entre les variables definides en el document, ni repeticions de definició.
     """
-    def __init__(self, val=(2**64)-1):
+    def __init__(self, val=MAX_MASK_VALUE-1):
         """
         Crea una nova instància de la classe "Mask" amb el valor de màscara <val>. El valor màxim de la màscara és (2 ** 64) - 1. Si s'excedeix, s'establirà el valor màxim com valor de la màscara.
 
@@ -16,7 +18,7 @@ class Mask(object):
         elif type(val) == int:
             v = val
         else:
-            v = (2**64)-1
+            v = MAX_MASK_VALUE-1
         self.val = v
         
 
@@ -69,16 +71,3 @@ class Mask(object):
             if b == "1":
                 count+=1
         return count
-
-
-if __name__ == "__main__":
-    a = Mask(2**63)
-    b = Mask(7)
-    d = Mask(13116)
-    x = 5
-    c = Mask(x.to_bytes(8))
-    print(int(d & b)) # expected 7
-    print(int(b & c)) # expected 5
-    print((b & c).get_mask()) # expected 5
-    print(len(b)) # expected 3
-    print(len(c)) # expected 2 

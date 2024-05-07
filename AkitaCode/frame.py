@@ -1,9 +1,10 @@
-from .data import *
-from .protocol import Protocol, Vector
+from .data import Data, Function, Argument, Variable
+from .protocol import *
 
 class Frame(object):
     """
-    La classe Frame representa una trama CAN que serà enviada o rebuda posteriorment. Aquesta classe conté els mètodes per afegir dades específiques de la classe Data a la trama.
+    La classe Frame representa una trama CAN que serà enviada o rebuda posteriorment. 
+    Aquesta classe conté els mètodes per afegir dades específiques de la classe Data a la trama.
     """
     def __init__(self):
         """
@@ -19,7 +20,8 @@ class Frame(object):
 
     def add_to_frame(self, vector:Vector, protocol:Protocol) -> int:
         """
-        Converteix un objecte de la classe Vector <vector> a un objecte de la subclasse Data vàlid prenent com a referencia l'objecte Protocol <protocol>.
+        Converteix un objecte de la classe Vector <vector> a un objecte de la subclasse Data vàlid 
+        prenent com a referencia l'objecte Protocol <protocol>.
 
         .. container::
 
@@ -61,12 +63,18 @@ class Frame(object):
         :rtype: int
 
         .. note::
-            Si un objecte Frame està buit, l'identificador, l'adreça i el tipus de trama CAN s'assignaran a l'objecte Frame buit a partir del primer objecte de dades afegit a ell.
+            Si un objecte Frame està buit, l'identificador, l'adreça i el tipus de trama CAN s'assignaran a 
+            l'objecte Frame buit a partir del primer objecte de dades afegit a ell.
         
         .. warning::
-            Si l'identificador de la trama no coincideix amb les dades que vols assignar, aleshores aquestes dades s'eliminen (equivalent a no afegir-les a la trama). El mateix s'aplica a l'adreça de l'objecte de dades que vols afegir a la trama i al contingut de la trama (és a dir, si aquesta trama conté funcions o variables).
+            Si l'identificador de la trama no coincideix amb les dades que vols assignar, aleshores aquestes 
+            dades s'eliminen (equivalent a no afegir-les a la trama). El mateix s'aplica a l'adreça de l'objecte 
+            de dades que vols afegir a la trama i al contingut de la trama (és a dir, si aquesta trama conté 
+            funcions o variables).
 
-            Cal tenir en compte que les variables o funcions repetides dins d'un objecte Frame també seran rebutjades per a la inserció. Les comprovacions en aquest nivell es realitzen a través de la màscara assignada a les dades de la classe Data.
+            Cal tenir en compte que les variables o funcions repetides dins d'un objecte Frame també seran 
+            rebutjades per a la inserció. Les comprovacions en aquest nivell es realitzen a través de la màscara 
+            assignada a les dades de la classe Data.
         """
         # Comprovem que els arguments corresponguin amb el tipus correcte.
         if not isinstance(vector, Vector):
@@ -80,10 +88,10 @@ class Frame(object):
             return 3
         
         # Mirem si la trama és buida. Configurem el tipus de trama.
-        if len(self._datalist) == 0 and self._is_function != True:
-            if vector.datatype in ["T", "R"]:
+        if len(self._datalist) == 0 and self._is_function is not True:
+            if vector.datatype in [VECTOR_TX_VARIABLE_DATATYPE, VECTOR_RX_VARIABLE_DATATYPE]:
                 self._is_function = False
-                self._is_response = True if vector.datatype == "R" else False
+                self._is_response = True if vector.datatype == VECTOR_RX_VARIABLE_DATATYPE else False
                 self._can_id = info["msg_id"]
                 d = Variable(
                     ids = vector.ids,
@@ -94,7 +102,7 @@ class Frame(object):
                     is_response = self._is_response)
                 self._datalist.append(d)
                 return 0
-            elif vector.datatype == "F":
+            elif vector.datatype == VECTOR_FUNCTION_DATATYPE:
                 self._can_id = info["msg_id"]
                 self._is_function = True
                 self._is_response = False
@@ -109,7 +117,7 @@ class Frame(object):
         else:
             if self._is_function:
                 if isinstance(self.__function,Function):
-                    if vector.datatype == "A":
+                    if vector.datatype == VECTOR_ARGUMENT_DATATYPE:
                         if info["f_id"] == self.__function.ids:
                             a = Argument(
                                 ids=vector.ids,
@@ -127,7 +135,7 @@ class Frame(object):
                     return 7
                 return 8
             else:
-                if (self._can_id == info["msg_id"]) and ((vector.datatype == "T" and not self._is_response) or (vector.datatype == "R" and self._is_response)):
+                if (self._can_id == info["msg_id"]) and ((vector.datatype == VECTOR_TX_VARIABLE_DATATYPE and not self._is_response) or (vector.datatype == VECTOR_RX_VARIABLE_DATATYPE and self._is_response)):
                     v = Variable(
                         ids=vector.ids,
                         name=info["name"],
@@ -161,7 +169,8 @@ class Frame(object):
 
     def get_can_frame(self):
         """
-        Retorna una llista amb el contingut de les dades de la trama CAN en el format de trama CAN (B0,B1,B2,B3,B4,B5,B6,B7) per ser enviada.
+        Retorna una llista amb el contingut de les dades de la trama CAN en el format de trama 
+        CAN (B0,B1,B2,B3,B4,B5,B6,B7) per ser enviada.
 
         :return: Dades de la trama CAN.
         :rtype: list
@@ -232,14 +241,3 @@ class Frame(object):
         :rtype: str
         """
         return "Frame Object: ("+str(hex(self.get_can_id()))+") have "+str(self.__len__())+" elements."
-
-
-if __name__ == "__main__":
-    a = Data("HOLA", 184, mask=65283, n_bits=10, value=127)
-    b = Data("ALOHA", 184, mask=2**16, n_bits=1, value=1)
-    c = Data("ADEU", 587, 65283, 10, value=78, is_function=True)
-    f = Frame()
-    print(f.add_to_frame(a)) # expected 0
-    print(f.add_to_frame(b)) # expected 0
-    print(f.add_to_frame(c)) # expected 2
-    print(f.get_can_id(),f.get_frame())

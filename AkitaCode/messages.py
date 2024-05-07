@@ -57,6 +57,7 @@ class StatusMessage(Message):
         return f"[({self.return_code}) {self.msgtype}] {self.msg}" if self.nline is None else f"[({self.return_code}) {self.msgtype} <on Line {self.nline}>] {self.msg}"
 
 
+
 class ProcessMessage(Message):
     def __init__(self, currentCycle:int, totalCycle:int, msg:str) -> None:
         super().__init__(msg)
@@ -70,6 +71,7 @@ class ProcessMessage(Message):
         """
         return f"({round(self.currentCycle/self.totalCycle,1)*100}%) {self.msg}"
     
+
 
 class EOPMessage(Message):
     """

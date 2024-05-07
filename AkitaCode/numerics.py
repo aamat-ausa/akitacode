@@ -100,34 +100,4 @@ def ss_to_int_format(n):
         else:
             return False
     else:
-        return False
-
-
-
-
-if __name__ == "__main__":
-    # a = -4
-    # print(to_signed_format(a))
-    a = -12
-    b = -5
-    c = -27
-    d = -1
-    e = -129
-    # print(to_signed_format(a))
-    print(ss_to_signed_format(a))
-    print(ss_to_signed_format(b))
-    print(ss_to_signed_format(c))
-    print(ss_to_signed_format(d))
-    print(ss_to_signed_format(e))
-    a = 20
-    b = 11
-    c = 37
-    d = 3
-    e = 383
-    print(ss_to_int_format(a))
-    print(ss_to_int_format(b))
-    print(ss_to_int_format(c))
-    print(ss_to_int_format(d))
-    print(ss_to_int_format(e))
-    # print(to_int_format(d))
-    
+        return False  
