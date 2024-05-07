@@ -1,13 +1,13 @@
-
 from .line import *
 from .bd import *
 from .protocol import *
 from .messages import StatusMessage, EOPMessage
 from .conditionals import generate_combinations
 from pathlib import Path
+from queue import Queue
 import pickle
 import time
-from queue import Queue
+import secrets
 
 VERSION = "2.0.6"
 
@@ -729,9 +729,11 @@ class Document(object):
                             q.put(timeTotal)
                         # Busca la primera situació de cada entorn i inicialitza l'entorn.
                         if i % for_number_of_situations == 0:
+                            curr_env_name = secrets.token_hex(10).capitalize()
                             exportable += [Vector(ids=curr_env_name,data_type=VECTOR_ENVIROMENT_DATATYPE,value=None)]
                         # Creem una nova situació per cada diccionari de la llista.
-                        exportable += [Vector(ids=0,data_type=VECTOR_SITUATION_DATATYPE,value=for_situations[i]["**time"])]
+                        sit_id_gen = secrets.token_hex(4).capitalize()
+                        exportable += [Vector(ids=sit_id_gen,data_type=VECTOR_SITUATION_DATATYPE,value=for_situations[i]["**time"])]
                         # Cerquem totes les variables
                         sit_variables = [element for element in list(for_situations[i].keys()) if element not in ("**time","**functions")]
                         # Creem els Vectors en funció del tipus de variable.

@@ -4,6 +4,12 @@ You can consult the documentation for this library in the [Wiki page of the offi
 
 ## History log
 
+### Version 2.0.7
+
+- Fixed the problem with enviroments vector constants during method ``make()`` AKITA Testbench Document.
+
+- Fixed the classification problem during automatic vectorization of environments and situations.
+
 ### Version 2.0.6
 
 - The ``dict()`` method is added to the ``Information`` class to facilitate the handling of ARP files.
