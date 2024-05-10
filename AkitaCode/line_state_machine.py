@@ -12,22 +12,22 @@ def create_line_state_machine():
     root = State(0,error_msg="Unexpected keyword ''{}'' at first word of line.")
     # Creació dels Estats de la comanda import.
     import_instance = State(
-        id=1000,
+        ids=1000,
         command="import",
         strict=True,
         error_msg="Unexpected keyword ''{}'' after ''import'' statement.")
-    
+
     import_protocol = State(
-        id=1001,
+        ids=1001,
         command="protocol",
         error_msg="Requiered protocol name after ''protocol'' statement.")
-    
+
     import_name_protocol = State(
-        id=1002,
+        ids=1002,
         command="<name>",
         strict=False,
         error_msg="More than expected statements. ''{}'' not expected.")
-    
+
     # Creació dels Estats de la comanda //.
     comment = State(999990, required=False, command="//",allow_reserved_words=True)
     comment_msg = State(999991, required=False, strict=False, command="<msg>",allow_reserved_words=True)
@@ -35,7 +35,7 @@ def create_line_state_machine():
 
     # Creació dels Estats de la comanda create.
     create_instance = State(
-        id=2000,
+        ids=2000,
         command="create",
         error_msg="Unexpected keyword ''{}'' after ''create'' instance."
     )
@@ -43,32 +43,32 @@ def create_line_state_machine():
     # ### SITUATION ###
     
     situation_statement = State(
-        id=2100,
+        ids=2100,
         command="situation",
         error_msg="Requiered situation name after ''situation'' statement. Use ''_'' to generate automatically an alias."
     )
 
     situation_name = State(
-        id=2101,
+        ids=2101,
         command="<name>",
         strict=False,
         error_msg="Expected keyword ''with'' after name situation statement."
     )
 
     with_under_situation = State(
-        id=2102,
+        ids=2102,
         command="with",
         error_msg="Unexpected keyword ''{}'' after ''with'' keyword."
     )
     
     time_under_situation = State(
-        id=2103,
+        ids=2103,
         command="time",
         error_msg="Invalid time expression ''{}'' in miliseconds. Float time not be allowed."
     )
 
     set_time_under_situation = State(
-        id=2104,
+        ids=2104,
         command="<time>",
         error_msg="No required more arguments after time situation value. ''{}'' not expected.",
         required=True,
@@ -78,13 +78,13 @@ def create_line_state_machine():
     # ### ENVIROMENT ###
 
     enviroment_instance = State(
-        id=2200,
+        ids=2200,
         command="enviroment",
         error_msg="Requiered enviroment name after ''enviroment'' statement. Use ''_'' to generate automatically an alias."
     )
 
     enviroment_name = State(
-        id=2201,
+        ids=2201,
         command="<name>",
         error_msg="No required more arguments after time situation value. ''{}'' not expected.",
         strict=False,
@@ -94,13 +94,13 @@ def create_line_state_machine():
     # Creació dels Estats de la comanda var.
 
     variable_instance = State(
-        id=3000,
+        ids=3000,
         command="var",
         error_msg="Expected variable name after variable instance."
     )
 
     variable_name = State(
-        id=3001,
+        ids=3001,
         command="<name>",
         error_msg="Invalid assignment after variable name. To assign value to variable use: ''='' after variable name.",
         strict=False,
@@ -108,13 +108,13 @@ def create_line_state_machine():
     )
 
     variable_assignament = State(
-        id=3002,
+        ids=3002,
         command="=",
         error_msg="Expected value after assignment expression."
     )
 
     variable_value = State(
-        id=3003,
+        ids=3003,
         command="<value>",
         error_msg="No required more arguments after variable value. ''{}'' not expected.",
         required=True,
@@ -124,26 +124,26 @@ def create_line_state_machine():
     # Creació dels Estats de la comanda fn.
 
     function_instance = State(
-        id=4000,
+        ids=4000,
         command="fn",
         error_msg="Expected function name after ''fn'' statement."
     )
 
     function_name = State(
-        id=4001,
+        ids=4001,
         command="<name>",
         error_msg="Open query ''('' is required after function name. ''{}'' not expected.",
         strict=False
     )
 
     function_open_query = State(
-        id=4002,
+        ids=4002,
         command="(",
         error_msg="Expected an attribute of function after open query directive."
     )
 
     atribute1_name = State(
-        id=4003,
+        ids=4003,
         command="<attribute>",
         error_msg="Expected value for function attribute.",
         required=True,
@@ -151,7 +151,7 @@ def create_line_state_machine():
     )
 
     atribute1_value = State(
-        id=4004,
+        ids=4004,
         command="<value>",
         error_msg="Expected pipe ''|'' or close query directive '')''.",
         required=True,
@@ -159,7 +159,7 @@ def create_line_state_machine():
     )
 
     pipe_argument = State(
-        id=4005,
+        ids=4005,
         command="|",
         error_msg="Expected an attribute of function after pipe directive.",
         strict=True,
@@ -167,7 +167,7 @@ def create_line_state_machine():
     )
 
     atribute2_name = State(
-        id=4006,
+        ids=4006,
         command="<attribute>",
         error_msg="Expected value for function attribute.",
         strict=False,
@@ -175,14 +175,14 @@ def create_line_state_machine():
     )
 
     atribute2_value = State(
-        id=4007,
+        ids=4007,
         command="<value>",
         error_msg="Expected pipe ''|'' or close query directive '')''.",
         strict=False
     )
 
     function_close_query = State(
-        id=4008,
+        ids=4008,
         command=")",
         error_msg="No required more arguments after close query. ''{}'' not expected."
     )
@@ -191,7 +191,7 @@ def create_line_state_machine():
     # Creació dels Estats de la comanda end.
 
     end_statement = State(
-        id=10001,
+        ids=10001,
         command="end",
         error_msg="Unexpected argument {} after end statement."
     )
@@ -201,51 +201,51 @@ def create_line_state_machine():
     # Creació dels Estats de la comanda for.
 
     for_instance = State(
-        id=5000,
+        ids=5000,
         command="for",
         error_msg="Expected condition after ''for'' statement."
     )
 
     for_each = State(
-        id=5001,
+        ids=5001,
         command="each",
         error_msg="Expected ''case'' keyword after conditions."
     )
 
     for_case = State(
-        id=5002,
+        ids=5002,
         command="case",
         error_msg="Expected ''of'' keyword after all cases declaration."
     )
 
     for_of = State(
-        id=5003,
+        ids=5003,
         command="of",
         error_msg="Expected open query ''('' statment after ''of''."
     )
 
     for_openquery = State(
-        id=5004,
+        ids=5004,
         command="(",
         error_msg="Expected output variable after open query statement."
     )
 
     for_variable1 = State(
-        id=5005,
+        ids=5005,
         command="<variable>",
         error_msg="A comma or close query statement is expected.",
         strict=False
     )
 
     for_next_variable = State(
-        id=5006,
+        ids=5006,
         command=",",
         error_msg="Expected another output variable.",
         required=False
     )
 
     for_variable2 = State(
-        id=5007,
+        ids=5007,
         command="<variable>",
         error_msg="A comma or close query statement is expected.",
         strict=False,
@@ -253,13 +253,13 @@ def create_line_state_machine():
     )
 
     for_closequery = State(
-        id=5008,
+        ids=5008,
         command=")",
         error_msg="Expected ''do'' statement after close query."
     )
 
     for_do = State(
-        id=5009,
+        ids=5009,
         command="do",
         error_msg="No required more arguments after ''do'' statement. ''{}'' not expected."
     )
@@ -269,13 +269,13 @@ def create_line_state_machine():
     # Creació dels Estats de la comanda time.
 
     time_instance = State(
-        id=6000,
+        ids=6000,
         command="time",
         error_msg="Expected time value after time statement."
     )
 
     time_value = State(
-        id=6001,
+        ids=6001,
         command="<time>",
         error_msg="No required more arguments after set time. ''{}'' not expected.",
         strict=False

@@ -201,7 +201,6 @@ class Database(object):
             functions = self.get_all_function_id_from_protocol(p_id)
             for func in functions:
                 self.delete_function(func)
-            
             variables = self.get_all_variable_id_from_protocol(p_id)
             for variable in variables:
                 self.delete_variable(variable)
@@ -336,7 +335,7 @@ class Database(object):
             cursor = conn.cursor()
             cursor.execute('''SELECT p_name FROM Protocol WHERE p_id = (?)''',(p_id,))
             return cursor.fetchone()[0]
-        except:
+        except Exception:
             return None
         finally:
             conn.close()
@@ -355,7 +354,7 @@ class Database(object):
             cursor = conn.cursor()
             cursor.execute('''SELECT p_description FROM Protocol WHERE p_id = (?)''',(p_id,))
             return cursor.fetchone()[0]
-        except:
+        except Exception:
             return None
         finally:
             conn.close()
@@ -501,10 +500,10 @@ class Database(object):
         except Exception as e:
             logging.error(f'Error getting used msg_ids from protocol except f_id {f_id}: {e}')
             return False
-                           
+
     ############################## VARIABLE FUNCTIONS ##############################
-    def add_variable(self, v_name:str, v_description:str, v_direction:int, v_msg_id:str, 
-                     v_mask:bytes, v_is_signed:bool, v_default:int, v_offset:int, v_mul:int, 
+    def add_variable(self, v_name:str, v_description:str, v_direction:int, v_msg_id:str,
+                     v_mask:bytes, v_is_signed:bool, v_default:int, v_offset:int, v_mul:int,
                      v_div:int, p_id:int) -> int|Exception:
         """
         Agrega una variable a la base de dades.
@@ -555,7 +554,7 @@ class Database(object):
         else:
             try:
                 v_default = int(v_default)
-            except:
+            except Exception:
                 return 2
 
         #3 Count the bits in mask.
@@ -565,16 +564,13 @@ class Database(object):
         
         #4 Check if default_value is in range.
         if countbits == 1:
-            signed = 0
             if v_default >= 2**countbits or v_default < 0:
                 return 4
         else:
             if v_is_signed:
-                signed = 1
                 if v_default >= 2**(countbits-1) or v_default < -(2**(countbits-1)):
                     return 4
             else:
-                signed = 0
                 if v_default >= 2**countbits or v_default < 0:
                     return 4
 
@@ -583,7 +579,7 @@ class Database(object):
             can_message = int(v_msg_id,16)
             if can_message > 0x1FFFFFFF or can_message < 0x00000000:
                 return 5
-        except:
+        except Exception:
             return 5
 
         #6 Comprova que no existeix a la base de dades una variable amb el mateix nom associada al protocol.
@@ -625,8 +621,8 @@ class Database(object):
             logging.error(f'Error adding variable: {error}')
             return 8
 
-    def modify_variable(self, v_id:int, v_name:str, v_description:str, v_direction:int, 
-                        v_msg_id:str, v_mask:bytes, v_is_signed:bool, v_default:str, 
+    def modify_variable(self, v_id:int, v_name:str, v_description:str, v_direction:int,
+                        v_msg_id:str, v_mask:bytes, v_is_signed:bool, v_default:str,
                         v_offset:int, v_mul:int, v_div:int, p_id:int) -> int|Exception:
         """
         Modifica una variable <v_id> de la base de dades.
@@ -679,7 +675,7 @@ class Database(object):
         else:
             try:
                 v_default = int(v_default)
-            except:
+            except Exception:
                 return 2
 
         #3 Count the bits in mask.
@@ -704,7 +700,7 @@ class Database(object):
             can_message = int(v_msg_id,16)
             if can_message > 0x1FFFFFFF or can_message < 0x00000000:
                 return 5
-        except:
+        except Exception:
             return 5
 
         #6 Comprova que no existeix a la base de dades una variable amb el mateix nom associada al protocol.
@@ -734,8 +730,8 @@ class Database(object):
         try:
             with sql.connect(self.db) as conn:
                 cursor = conn.cursor()
-                cursor.execute("""UPDATE Variable SET v_name=?, v_description=?, v_direction=?, v_msg_id=?, v_mask=?, v_is_signed=?, 
-                               v_default=?, v_offset=?, v_mul=?, v_div=? WHERE v_id=?""", 
+                cursor.execute("""UPDATE Variable SET v_name=?, v_description=?, v_direction=?, v_msg_id=?, v_mask=?, v_is_signed=?,
+                               v_default=?, v_offset=?, v_mul=?, v_div=? WHERE v_id=?""",
                                (var_name, v_description, v_direction, can_message, v_mask, v_is_signed, v_default, v_offset, v_mul, v_div, v_id,))
                 conn.commit()
                 return 0
@@ -821,7 +817,7 @@ class Database(object):
             cursor = conn.cursor()
             cursor.execute('''SELECT v_name FROM Variable WHERE v_id = (?)''',(v_id,))
             return cursor.fetchone()[0]
-        except:
+        except Exception:
             return None
         finally:
             conn.close()
@@ -864,7 +860,7 @@ class Database(object):
                 cursor = conn.cursor()
                 cursor.execute('SELECT v_description FROM Variable WHERE v_id = ?', (v_id,))
                 result = cursor.fetchone()
-                if result is not None: 
+                if result is not None:
                     return result[0]
         except Exception as e:
             raise Exception(f"No s'ha pogut obtenir la descripcio de la variable amb ID {v_id}. Error: {e}")
@@ -945,7 +941,7 @@ class Database(object):
                 cursor = conn.cursor()
                 cursor.execute('SELECT v_default FROM Variable WHERE p_id = (?) AND v_name = (?)',(p_id,v_name,))
                 return cursor.fetchone()[0]
-        except:
+        except Exception:
             return None
         finally:
             conn.close()
@@ -1133,7 +1129,7 @@ class Database(object):
             return False
         except sql.Error as e:
             print(f'Error de la base de dades: {e}')
-            return False    
+            return False
 
     def update_variable_is_signed(self, v_id:int, v_is_signed:int) -> int|Exception:
         """
@@ -1264,7 +1260,8 @@ class Database(object):
             with sql.connect(self.db) as conn:
                 conn.row_factory = lambda cursor, row: row[0]
                 cursor = conn.cursor()
-                cursor.execute('''SELECT v_mask FROM Variable WHERE p_id=(?) and v_direction=(?) and v_msg_id=(?)''',(p_id,direction,v_msg_id))
+                cursor.execute('''SELECT v_mask FROM Variable WHERE p_id=(?) and v_direction=(?) and v_msg_id=(?)''',
+                               (p_id,direction,v_msg_id))
                 return cursor.fetchall()
         except Exception as e:
             logging.error(f"Error en obtenir les màscares de les variables del protocol. {e}")
@@ -1317,7 +1314,8 @@ class Database(object):
             with sql.connect(self.db) as conn:
                 conn.row_factory = lambda cursor, row: row[0]
                 cursor = conn.cursor()
-                cursor.execute('''SELECT v_mask FROM Variable WHERE p_id=(?) and v_direction=(?) and v_msg_id=(?) and v_id != (?)''',(p_id,direction,v_msg_id,v_id))
+                cursor.execute('''SELECT v_mask FROM Variable WHERE p_id=(?) and v_direction=(?) and v_msg_id=(?) and v_id != (?)''',
+                               (p_id,direction,v_msg_id,v_id))
                 return cursor.fetchall()
         except Exception as e:
             logging.error(f"Error en obtenir les màscares de les variables del protocol excepte {v_id}. {e}")
@@ -1496,7 +1494,7 @@ class Database(object):
             can_message = int(f_msg_id,16)
             if can_message > 0x1FFFFFFF or can_message < 0x00000000:
                 return 2
-        except:
+        except Exception:
             return 2
 
         #3 Comprova que no existeix a la base de dades una function amb el mateix nom associada al protocol.
@@ -1558,7 +1556,7 @@ class Database(object):
             can_message = int(f_msg_id,16)
             if can_message > 0x1FFFFFFF or can_message < 0x00000000:
                 return 2
-        except:
+        except Exception:
             return 2
 
         #3 Comprova que no existeix a la base de dades una function amb el mateix nom associada al protocol.
@@ -1620,10 +1618,10 @@ class Database(object):
             cursor = conn.cursor()
             cursor.execute('''SELECT f_name FROM Function WHERE f_id = (?)''',(f_id,))
             return cursor.fetchone()[0]
-        except:
+        except Exception:
             return None
         finally:
-            conn.close()    
+            conn.close()
 
     def get_function_id(self, p_id:int, f_name:str) -> int|None:
         """
@@ -1665,7 +1663,7 @@ class Database(object):
             cursor = conn.cursor()
             cursor.execute('''SELECT f_name FROM Function WHERE f_id = (?)''',(f_id,))
             return cursor.fetchone()[0]
-        except:
+        except Exception:
             return None
         finally:
             conn.close()
@@ -1860,7 +1858,7 @@ class Database(object):
                 return function_info
         except sql.Error as e:
             logging.error(f"Error obtenint informació de la funció: {e}")
-            raise e 
+            raise e
 
     def get_all_functions_names_from_protocol_except_f_id(self, p_id:int, f_id:int) -> list[str] | bool:
         """
@@ -1965,8 +1963,8 @@ class Database(object):
                 cursor = conn.cursor()
                 cursor.execute("""SELECT COUNT(*) FROM Function WHERE f_id = (?);""", (f_id,))
                 if cursor.fetchone()[0] != 0:
-                    cursor.execute("""INSERT INTO Argument(a_name, a_description, a_is_signed, a_mask, a_offset, a_mul, a_div, f_id) VALUES 
-                                   (?, ?, ?, ?, ?, ?, ?, ?)""", 
+                    cursor.execute("""INSERT INTO Argument(a_name, a_description, a_is_signed, a_mask, a_offset, a_mul, a_div, f_id) VALUES
+                                   (?, ?, ?, ?, ?, ?, ?, ?)""",
                                    (var_name, a_description, a_is_signed, a_mask, a_offset, a_mul, a_div, f_id,))
                     conn.commit()
                     return 0
@@ -2161,7 +2159,7 @@ class Database(object):
             cursor = conn.cursor()
             cursor.execute('''SELECT a_name FROM Argument WHERE a_id = (?)''',(a_id,))
             return cursor.fetchone()[0]
-        except:
+        except Exception:
             return None
         finally:
             conn.close()
@@ -2409,7 +2407,7 @@ class Database(object):
         :return: 0 si s'ha realitzat una modificació, Exception altrament.
         :rtype: int|Exception
         """
-        try: 
+        try:
             with sql.connect(self.db) as conn:
                 conn.row_factory = sql.Row
                 c = conn.cursor()
@@ -2665,67 +2663,67 @@ class Database(object):
         return resultados
 
     def extract_protocol(self, p_id:int) -> tuple|Exception:
-            """
-            Extreu tot el protocol <p_id>, separant els missatges que contenen variables de transmissió, variables de recepció i funcions.
+        """
+        Extreu tot el protocol <p_id>, separant els missatges que contenen variables de transmissió, variables de recepció i funcions.
 
-            :param p_id: ID del protocol
-            :type p_id: int
-            :return: Una tupla amb 3 diccionaris amb la informació del protocol seleccionat (0->F,1->T,2->R).
-            :rtype: tuple (o Exception)
-            :raises Exception: Si hi ha hagut algun error en l'execució de la consulta.
-            """
-            try:
-                with sql.connect(self.db) as conn:
-                    cursor = conn.cursor()
-                    cursor.execute('SELECT * FROM Function WHERE p_id = ?', (p_id,))
-                    funcions = cursor.fetchall()
-                    cursor.execute('SELECT * FROM Variable WHERE p_id = ? and v_direction = 0', (p_id,))
-                    var_tx = cursor.fetchall()
-                    cursor.execute('SELECT * FROM Variable WHERE p_id = ? and v_direction = 1', (p_id,))
-                    var_rx = cursor.fetchall()
-                    fun_dict = {}
-                    vartx_dict = {}
-                    varrx_dict = {}
-                    arg_dict = {}
-                    for funcio in funcions:
+        :param p_id: ID del protocol
+        :type p_id: int
+        :return: Una tupla amb 3 diccionaris amb la informació del protocol seleccionat (0->F,1->T,2->R).
+        :rtype: tuple (o Exception)
+        :raises Exception: Si hi ha hagut algun error en l'execució de la consulta.
+        """
+        try:
+            with sql.connect(self.db) as conn:
+                cursor = conn.cursor()
+                cursor.execute('SELECT * FROM Function WHERE p_id = ?', (p_id,))
+                funcions = cursor.fetchall()
+                cursor.execute('SELECT * FROM Variable WHERE p_id = ? and v_direction = 0', (p_id,))
+                var_tx = cursor.fetchall()
+                cursor.execute('SELECT * FROM Variable WHERE p_id = ? and v_direction = 1', (p_id,))
+                var_rx = cursor.fetchall()
+                fun_dict = {}
+                vartx_dict = {}
+                varrx_dict = {}
+                arg_dict = {}
+                for funcio in funcions:
+                    temp_dict = {}
+                    temp_dict["name"] = funcio[1]
+                    temp_dict["msg_id"] = funcio[3]
+                    fun_dict[funcio[0]] = temp_dict
+
+                    cursor.execute('SELECT * FROM ARGUMENT where f_id = ?', (funcio[0],))
+                    arguments = cursor.fetchall()
+                
+                    for argument in arguments:
                         temp_dict = {}
-                        temp_dict["name"] = funcio[1]
-                        temp_dict["msg_id"] = funcio[3]
-                        fun_dict[funcio[0]] = temp_dict
+                        temp_dict["name"] = argument[1]
+                        temp_dict["is_signed"] = argument[3]
+                        temp_dict["mask"] = argument[4]
+                        temp_dict["f_id"] = argument[8]
+                        arg_dict[argument[0]] = temp_dict
 
-                        cursor.execute('SELECT * FROM ARGUMENT where f_id = ?', (funcio[0],))
-                        arguments = cursor.fetchall()
-                    
-                        for argument in arguments:
-                            temp_dict = {}
-                            temp_dict["name"] = argument[1]
-                            temp_dict["is_signed"] = argument[3]
-                            temp_dict["mask"] = argument[4]
-                            temp_dict["f_id"] = argument[8]
-                            arg_dict[argument[0]] = temp_dict
+                for variable in var_tx:
+                    temp_dict = {}
+                    temp_dict["name"] = variable[1]
+                    temp_dict["msg_id"] = variable[4]
+                    temp_dict["mask"] = variable[5]
+                    temp_dict["is_signed"] = variable[6]
+                    temp_dict["tolerance"] = variable[11]
+                    vartx_dict[variable[0]] = temp_dict
 
-                    for variable in var_tx:
-                        temp_dict = {}
-                        temp_dict["name"] = variable[1]
-                        temp_dict["msg_id"] = variable[4]
-                        temp_dict["mask"] = variable[5]
-                        temp_dict["is_signed"] = variable[6]
-                        temp_dict["tolerance"] = variable[11]
-                        vartx_dict[variable[0]] = temp_dict
+                for variable in var_rx:
+                    temp_dict = {}
+                    temp_dict["name"] = variable[1]
+                    temp_dict["msg_id"] = variable[4]
+                    temp_dict["mask"] = variable[5]
+                    temp_dict["is_signed"] = variable[6]
+                    temp_dict["tolerance"] = variable[11]
+                    varrx_dict[variable[0]] = temp_dict
 
-                    for variable in var_rx:
-                        temp_dict = {}
-                        temp_dict["name"] = variable[1]
-                        temp_dict["msg_id"] = variable[4]
-                        temp_dict["mask"] = variable[5]
-                        temp_dict["is_signed"] = variable[6]
-                        temp_dict["tolerance"] = variable[11]
-                        varrx_dict[variable[0]] = temp_dict
+                return fun_dict, vartx_dict, varrx_dict, arg_dict
 
-                    return fun_dict, vartx_dict, varrx_dict, arg_dict
-
-            except Exception as e:
-                raise Exception(f"No s'ha pogut obtenir la informació del Protocol {p_id}. Error: {e}")
+        except Exception as e:
+            raise Exception(f"No s'ha pogut obtenir la informació del Protocol {p_id}. Error: {e}")
 
     def export_all_as_json(self):
         """

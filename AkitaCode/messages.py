@@ -37,7 +37,7 @@ class StatusMessage(Message):
     """
     Conté un missatge d'estat. Un exemple pot ser l'estat d'una resposta o funció avaluada i el seu codi de retorn.
     """
-    def __init__(self, msgtype: str, msg: str, return_code: int, nline: int=None) -> None:
+    def __init__(self, msgtype: str, msg: str, return_code: int, nline: int = None) -> None:
         super().__init__(msg)
         self.return_code = return_code
         self.msgtype = msgtype
@@ -50,7 +50,7 @@ class StatusMessage(Message):
         """
         return f"[({self.return_code}) {self.msgtype}] {self.msg}" if self.nline is None else (
             f"[({self.return_code}) {self.msgtype} <on Line {self.nline}>] {self.msg}")
-    
+
 
     def __str__(self) -> str:
         """

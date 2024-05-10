@@ -87,7 +87,6 @@ class Frame(object):
         info = protocol.search(vector)
         if isinstance(info, bool):
             return 3
-        
         # Mirem si la trama és buida. Configurem el tipus de trama.
         if len(self._datalist) == 0 and self._is_function is not True:
             if vector.datatype in [VECTOR_TX_VARIABLE_DATATYPE, VECTOR_RX_VARIABLE_DATATYPE]:
@@ -137,8 +136,9 @@ class Frame(object):
                 return 8
             else:
                 if (self._can_id == info["msg_id"]) and (
-                    (vector.datatype == VECTOR_TX_VARIABLE_DATATYPE and not self._is_response) or 
-                    (vector.datatype == VECTOR_RX_VARIABLE_DATATYPE and self._is_response)):
+                    (vector.datatype == VECTOR_TX_VARIABLE_DATATYPE and not self._is_response) or
+                    (vector.datatype == VECTOR_RX_VARIABLE_DATATYPE and self._is_response)
+                ):
                     v = Variable(
                         ids=vector.ids,
                         name=info["name"],

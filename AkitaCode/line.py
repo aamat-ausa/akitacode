@@ -43,7 +43,7 @@ class Line(object):
         """
         return line.split()
 
-    
+
     def __validate(self) -> bool:
         """
         Indica si una línia és vàlida.

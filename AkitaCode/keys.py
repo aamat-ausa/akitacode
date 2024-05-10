@@ -3,7 +3,7 @@ class State(object):
     Representa la classe Estat de Línia. Permet crear diferents estats en funció de la línia del document específica.
     D'aquesta manera, es permet l'abstracció de la màquina d'estats durant la sintaxi d'una línia.
     """
-    def __init__(self, ids:int, required:bool=True, strict:bool=True, command:str|None=None, allow_reserved_words=False, error_msg:str="Undefined error."):
+    def __init__(self, ids: int, required: bool = True, strict: bool = True, command: str|None = None, allow_reserved_words: bool = False, error_msg: str = "Undefined error."):
         """
         Crea una instància de la classe State.
         """
@@ -36,7 +36,7 @@ class State(object):
             return False
 
 
-    def is_next(self, command:str|None) -> bool:
+    def is_next(self, command: str|None) -> bool:
         """
         Retorna True si la comanda <command> existeix en qualsevol dels estats fills de l'estat actual.
         """
@@ -68,7 +68,7 @@ class State(object):
         return False
 
 
-    def get_next(self, command:str|None):
+    def get_next(self, command: str|None):
         """
         Retorna l'estat següent si la comanda <command> existeix en qualsevol dels estats fills de l'estat actual.
         """
@@ -88,7 +88,7 @@ class State(object):
         self._error = True
         self._error_command = command
         return None
-        
+
 
     def get_error(self) -> str:
         """
@@ -97,10 +97,11 @@ class State(object):
         if self._use_reserved_word:
             return "Used a reserved word ''{}'' after ''{}'' statement.".format(str(self._error_command),self._command)
         return self._error_msg.format(str(self._error_command)) if self._error_command is not None else self._error_msg.format("<empty>")
-    
+
 
     def used_reserved_word(self) -> bool:
         return self._use_reserved_word
+
 
     def __str__(self) -> str:
         return str(self._id)

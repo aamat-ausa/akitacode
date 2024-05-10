@@ -5,7 +5,7 @@ from .instances import Instance
 from .instances import ForInstance, TimeInstance, EndInstance
 from .instances import VariableInstance, FunctionInstance
 from .instances import ProtocolInstance, EnviromentInstance, SituationInstance
-from .instances import SkipInstance, EndInstance
+from .instances import SkipInstance
 from .line import Line
 from .bd import Database
 from .messages import StatusMessage, EOPMessage

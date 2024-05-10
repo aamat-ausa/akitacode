@@ -4,6 +4,10 @@ You can consult the documentation for this library in the [Wiki page of the offi
 
 ## History log
 
+### Version 2.0.9
+
+- Fixed ``State`` initzalitzation in module ``line_state_machine.py``.
+
 ### Version 2.0.8
 
 - Fixed a bug during database export.
