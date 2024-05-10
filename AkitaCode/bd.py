@@ -104,8 +104,13 @@ PRAGMA foreign_keys = on;"""
 
 class Database(object):
     """
-    La classe Database permet establir la connexió a una base de dades de manera senzilla. La ruta de la base de dades s'emmagatzema en aquesta classe, permetent afegir mètodes de manera fàcil. La base de dades és tractada com un objecte, i es tanca i obre cada vegada que es fa una consulta o inserció de dades.\n\r
-    Aquesta classe permet una major flexibilitat en com es tracta la informació de les variables, funcions i protocols, permetent accedir a la base de dades només quan sigui necessari.
+    La classe Database permet establir la connexió a una base de dades de manera senzilla. 
+    La ruta de la base de dades s'emmagatzema en aquesta classe, permetent afegir mètodes 
+    de manera fàcil. La base de dades és tractada com un objecte, i es tanca i obre cada 
+    vegada que es fa una consulta o inserció de dades.\n\r
+    Aquesta classe permet una major flexibilitat en com es tracta la informació de les 
+    variables, funcions i protocols, permetent accedir a la base de dades només quan sigui 
+    necessari.
     """
     def __init__(self, db:str):
         """
@@ -124,7 +129,7 @@ class Database(object):
         :rtype: bool
         """
         return os.path.isfile(self.db)
-    
+
     ############################## PROTOCOL FUNCTIONS ##############################
     def add_protocol(self, p_name:str, p_description:str) -> int:
         """
@@ -312,7 +317,7 @@ class Database(object):
             cursor = conn.cursor()
             cursor.execute('''SELECT p_id FROM Protocol WHERE p_name = (?)''',(p_name,))
             return cursor.fetchone()[0]
-        except:
+        except Exception:
             return None
         finally:
             conn.close()
@@ -429,7 +434,7 @@ class Database(object):
                 cursor = conn.cursor()
                 cursor.execute('SELECT p_id FROM Variable WHERE v_id = ?', (v_id,))
                 result = cursor.fetchone()
-                if result is not None: 
+                if result is not None:
                     return result[0]
         except Exception as e:
             raise Exception(f"No s'ha pogut obtenir protocol ID de la variable amb ID {v_id}. Error: {e}")
@@ -495,10 +500,12 @@ class Database(object):
                 return save
         except Exception as e:
             logging.error(f'Error getting used msg_ids from protocol except f_id {f_id}: {e}')
-            return False    
+            return False
                            
     ############################## VARIABLE FUNCTIONS ##############################
-    def add_variable(self, v_name:str, v_description:str, v_direction:int, v_msg_id:str, v_mask:bytes, v_is_signed:bool, v_default:int, v_offset:int, v_mul:int, v_div:int, p_id:int) -> int|Exception:
+    def add_variable(self, v_name:str, v_description:str, v_direction:int, v_msg_id:str, 
+                     v_mask:bytes, v_is_signed:bool, v_default:int, v_offset:int, v_mul:int, 
+                     v_div:int, p_id:int) -> int|Exception:
         """
         Agrega una variable a la base de dades.
 
@@ -606,7 +613,9 @@ class Database(object):
         try:
             with sql.connect(self.db) as conn:
                 cursor = conn.cursor()
-                cursor.execute('INSERT INTO Variable(v_name, v_description, v_direction, v_msg_id, v_mask, v_is_signed, v_default, v_offset, v_mul, v_div, p_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (var_name, v_description, v_direction, can_message, v_mask, v_is_signed, v_default, v_offset, v_mul, v_div, p_id,))
+                cursor.execute("""INSERT INTO Variable(v_name, v_description, v_direction, v_msg_id, v_mask, v_is_signed, v_default, 
+                               v_offset, v_mul, v_div, p_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                               (var_name, v_description, v_direction, can_message, v_mask, v_is_signed, v_default, v_offset, v_mul, v_div, p_id,))
                 conn.commit()
                 return 0
         except ValueError as error:
@@ -616,7 +625,9 @@ class Database(object):
             logging.error(f'Error adding variable: {error}')
             return 8
 
-    def modify_variable(self, v_id:int, v_name:str, v_description:str, v_direction:int, v_msg_id:str, v_mask:bytes, v_is_signed:bool, v_default:str, v_offset:int, v_mul:int, v_div:int, p_id:int) -> int|Exception:
+    def modify_variable(self, v_id:int, v_name:str, v_description:str, v_direction:int, 
+                        v_msg_id:str, v_mask:bytes, v_is_signed:bool, v_default:str, 
+                        v_offset:int, v_mul:int, v_div:int, p_id:int) -> int|Exception:
         """
         Modifica una variable <v_id> de la base de dades.
 
@@ -678,16 +689,13 @@ class Database(object):
         
         #4 Check if default_value is in range.
         if countbits == 1:
-            signed = 0
             if v_default >= 2**countbits or v_default < 0:
                 return 4
         else:
             if v_is_signed:
-                signed = 1
                 if v_default >= 2**(countbits-1) or v_default < -(2**(countbits-1)):
                     return 4
             else:
-                signed = 0
                 if v_default >= 2**countbits or v_default < 0:
                     return 4
 
@@ -726,7 +734,9 @@ class Database(object):
         try:
             with sql.connect(self.db) as conn:
                 cursor = conn.cursor()
-                cursor.execute("UPDATE Variable SET v_name=?, v_description=?, v_direction=?, v_msg_id=?, v_mask=?, v_is_signed=?, v_default=?, v_offset=?, v_mul=?, v_div=? WHERE v_id=?", (var_name, v_description, v_direction, can_message, v_mask, v_is_signed, v_default, v_offset, v_mul, v_div, v_id,))
+                cursor.execute("""UPDATE Variable SET v_name=?, v_description=?, v_direction=?, v_msg_id=?, v_mask=?, v_is_signed=?, 
+                               v_default=?, v_offset=?, v_mul=?, v_div=? WHERE v_id=?""", 
+                               (var_name, v_description, v_direction, can_message, v_mask, v_is_signed, v_default, v_offset, v_mul, v_div, v_id,))
                 conn.commit()
                 return 0
         except ValueError as error:
@@ -877,7 +887,7 @@ class Database(object):
                 if result is not None: 
                     return result[0]
         except Exception as e:
-            raise Exception(f"No s'ha pogut obtenir la direcció de la variable amb ID {v_id}. Error: {e}") 
+            raise Exception(f"No s'ha pogut obtenir la direcció de la variable amb ID {v_id}. Error: {e}")
         
     def get_variable_canid(self, v_id:int) -> int|Exception:
         """
@@ -897,7 +907,7 @@ class Database(object):
                 if result is not None: 
                     return result[0]
         except Exception as e:
-            raise Exception(f"No s'ha pogut obtenir el missatge CAN ID de la variable amb ID {v_id}. Error: {e}") 
+            raise Exception(f"No s'ha pogut obtenir el missatge CAN ID de la variable amb ID {v_id}. Error: {e}")
 
     def get_variable_is_signed(self, v_id:int) -> bool|Exception:
         """
@@ -1180,7 +1190,7 @@ class Database(object):
         :return: int si s'ha realitzat una modificació, Exception altrament.
         :rtype: int|Exception
         """
-        try: 
+        try:
             with sql.connect(self.db) as conn:
                 conn.row_factory = sql.Row
                 c = conn.cursor()
@@ -1237,7 +1247,8 @@ class Database(object):
         
     def get_all_variables_masks_from_protocol(self, p_id:int, v_msg_id:int, direction:int) -> list[bytes] | bool:
         """
-        Retorna les màscares de totes les variables de direcció <direction> d'un protocol <p_id> a partir de l'identificador de missatge CAN <v_msg_id> i la direcció <direction>.
+        Retorna les màscares de totes les variables de direcció <direction> d'un protocol <p_id> 
+        a partir de l'identificador de missatge CAN <v_msg_id> i la direcció <direction>.
 
         :param p_id: L'identificador del protocol per obtenir les màscares de totes les variables.
         :type p_id: int
@@ -1279,7 +1290,8 @@ class Database(object):
             with sql.connect(self.db) as conn:
                 conn.row_factory = lambda cursor, row: row[0]
                 cursor = conn.cursor()
-                cursor.execute('''SELECT v_mask FROM Variable WHERE p_id=(?) and v_direction=(?) and v_msg_id=(?) and v_id != (?)''',(p_id,direction,v_msg_id,v_id))
+                cursor.execute("""SELECT v_mask FROM Variable WHERE p_id=(?) and v_direction=(?) and v_msg_id=(?) and v_id != (?)""",
+                               (p_id,direction,v_msg_id,v_id))
                 return cursor.fetchall()
         except Exception as e:
             logging.error(f"Error en obtenir les màscares de les variables del protocol excepte {v_id}. {e}")
@@ -1311,7 +1323,7 @@ class Database(object):
             logging.error(f"Error en obtenir les màscares de les variables del protocol excepte {v_id}. {e}")
             return False
         finally:
-            conn.close()    
+            conn.close()
 
     def get_all_variables_names_from_protocol_except_v_id(self, p_id:int, v_id:int) -> list[str] | bool:
         """
@@ -1388,11 +1400,11 @@ class Database(object):
                 cursor = conn.cursor()
                 cursor.execute("SELECT * FROM Variable")
                 for item in cursor.fetchall():
-                    structure[self.get_protocol_name(item[11])].append(item) 
+                    structure[self.get_protocol_name(item[11])].append(item)
                 return dict(structure)
         except sql.Error as e:
             logging.error(f"Error obtenint totes les variables: {e}")
-            raise e                    
+            raise e
 
     def get_info_from_variable(self, v_id:int) -> dict|Exception:
         """
@@ -1562,7 +1574,7 @@ class Database(object):
                 return 4
 
         try:
-            with sql.connect(self.db) as conn: 
+            with sql.connect(self.db) as conn:
                 cursor = conn.cursor()
                 cursor.execute("UPDATE Function SET f_name=?, f_description=?, f_msg_id=? WHERE f_id=?", (var_name, f_description, can_message, function_id))
                 conn.commit()
@@ -1673,10 +1685,10 @@ class Database(object):
                 cursor = conn.cursor()
                 cursor.execute('SELECT f_description FROM Function WHERE f_id = ?', (f_id,))
                 result = cursor.fetchone()
-                if result is not None: 
+                if result is not None:
                     return result[0]
         except Exception as e:
-            raise Exception(f"No s'ha pogut obtenir la descripcio de la funcio amb ID {f_id}. Error: {e}") 
+            raise Exception(f"No s'ha pogut obtenir la descripcio de la funcio amb ID {f_id}. Error: {e}")
 
     def get_function_canid(self, f_id:int) -> int|Exception:
         """
@@ -1693,10 +1705,10 @@ class Database(object):
                 cursor = conn.cursor()
                 cursor.execute('SELECT f_msg_id FROM Function WHERE f_id = ?', (f_id,))
                 result = cursor.fetchone()
-                if result is not None: 
+                if result is not None:
                     return result[0]
         except Exception as e:
-            raise Exception(f"No s'ha pogut obtenir el missatge CAN ID de la funció amb ID {f_id}. Error: {e}")  
+            raise Exception(f"No s'ha pogut obtenir el missatge CAN ID de la funció amb ID {f_id}. Error: {e}")
 
     def update_function_name(self, p_id:int, f_id:int, f_name:str) -> int:
         """
@@ -1798,31 +1810,31 @@ class Database(object):
                 cursor = conn.cursor()
                 cursor.execute("SELECT * FROM Function")
                 for item in cursor.fetchall():
-                    structure[self.get_protocol_name(item[4])].append(item) 
+                    structure[self.get_protocol_name(item[4])].append(item)
                 return dict(structure)
         except sql.Error as e:
             logging.error(f"Error obtenint totes les funcions: {e}")
             raise e
 
     def get_specific_p_id_from_f_id(self, f_id:int) -> int|Exception:
-            """
-            Retorna l'identificador de protocol associat a la funció amb identificador <f_id>.
+        """
+        Retorna l'identificador de protocol associat a la funció amb identificador <f_id>.
 
-            :param f_id: ID de la funció.
-            :type f_id: int
-            :return: Identificador del protocol associat.
-            :rtype: int (o Exception)
-            :raises Exception: Si hi ha hagut algun error en l'execució de la consulta.
-            """
-            try:
-                with sql.connect(self.db) as conn:
-                    cursor = conn.cursor()
-                    cursor.execute('SELECT p_id FROM Function WHERE f_id = ?', (f_id,))
-                    result = cursor.fetchone()
-                    if result is not None: 
-                        return result[0]
-            except Exception as e:
-                raise Exception(f"No s'ha pogut obtenir el missatge CAN ID de la variable amb ID {f_id}. Error: {e}")
+        :param f_id: ID de la funció.
+        :type f_id: int
+        :return: Identificador del protocol associat.
+        :rtype: int (o Exception)
+        :raises Exception: Si hi ha hagut algun error en l'execució de la consulta.
+        """
+        try:
+            with sql.connect(self.db) as conn:
+                cursor = conn.cursor()
+                cursor.execute('SELECT p_id FROM Function WHERE f_id = ?', (f_id,))
+                result = cursor.fetchone()
+                if result is not None: 
+                    return result[0]
+        except Exception as e:
+            raise Exception(f"No s'ha pogut obtenir el missatge CAN ID de la variable amb ID {f_id}. Error: {e}")
 
     def get_info_from_function(self, f_id:int) -> dict|Exception:
         """
@@ -1859,7 +1871,8 @@ class Database(object):
         :param f_id: L'identificador de la funció a excluir de la cerca.
         :type f_id: int
 
-        :return: Una llista amb els noms de totes les funcions associades a un protocol específic excepte <f_id> si la consulta és correcta, False si hi ha un error.
+        :return: Una llista amb els noms de totes les funcions associades a un protocol específic excepte <f_id> 
+        si la consulta és correcta, False si hi ha un error.
         :rtype: list[str] or False
         """
         try:
@@ -1890,9 +1903,9 @@ class Database(object):
                 return cursor.fetchall()
         except Exception as e:
             logging.error(f'Error getting function ids from protocol: {e}')
-            return False 
+            return False
 
-    ############################## ARGUMENT FUNCTIONS ##############################       
+    ############################## ARGUMENT FUNCTIONS ##############################
     def add_argument(self, a_name:str, a_description:str, a_is_signed:int, a_mask:bytes, a_offset:int, a_mul:int, a_div:int, f_id:int) -> int|Exception:
         """
         Afegeix el argument <a_name> amb descripció <a_description> a la base de dades.
@@ -1952,7 +1965,9 @@ class Database(object):
                 cursor = conn.cursor()
                 cursor.execute("""SELECT COUNT(*) FROM Function WHERE f_id = (?);""", (f_id,))
                 if cursor.fetchone()[0] != 0:
-                    cursor.execute('INSERT INTO Argument(a_name, a_description, a_is_signed, a_mask, a_offset, a_mul, a_div, f_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (var_name, a_description, a_is_signed, a_mask, a_offset, a_mul, a_div, f_id,))
+                    cursor.execute("""INSERT INTO Argument(a_name, a_description, a_is_signed, a_mask, a_offset, a_mul, a_div, f_id) VALUES 
+                                   (?, ?, ?, ?, ?, ?, ?, ?)""", 
+                                   (var_name, a_description, a_is_signed, a_mask, a_offset, a_mul, a_div, f_id,))
                     conn.commit()
                     return 0
         except ValueError as error:
@@ -2037,7 +2052,8 @@ class Database(object):
         try:
             with sql.connect(self.db) as conn:
                 cursor = conn.cursor()
-                cursor.execute("UPDATE Argument SET a_name=?, a_description=?, a_is_signed=?, a_mask=?, a_offset=?, a_mul=?, a_div=? WHERE a_id=?", (var_name, a_description, a_is_signed, a_mask, a_offset, a_mul, a_div, a_id,))
+                cursor.execute("UPDATE Argument SET a_name=?, a_description=?, a_is_signed=?, a_mask=?, a_offset=?, a_mul=?, a_div=? WHERE a_id=?",
+                               (var_name, a_description, a_is_signed, a_mask, a_offset, a_mul, a_div, a_id,))
                 conn.commit()
                 return 0
         except ValueError as error:
@@ -2168,7 +2184,7 @@ class Database(object):
                 if result is not None: 
                     return result[0]
         except Exception as e:
-            raise Exception(f"No s'ha pogut obtenir la descripcio de l'argument amb ID {a_id}. Error: {e}") 
+            raise Exception(f"No s'ha pogut obtenir la descripcio de l'argument amb ID {a_id}. Error: {e}")
 
     def get_argument_is_signed(self, a_id:int) -> bool|Exception:
         """
@@ -2527,7 +2543,7 @@ class Database(object):
                 cursor = conn.cursor()
                 cursor.execute("SELECT * FROM Argument")
                 for item in cursor.fetchall():
-                    structure[self.get_f_name_from_function(item[8])].append(item) 
+                    structure[self.get_f_name_from_function(item[8])].append(item)
                 return dict(structure)
         except sql.Error as e:
             logging.error(f"Error obtenint tots els arguments: {e}")
@@ -2608,7 +2624,8 @@ class Database(object):
                 p_id = protocol["p_id"]
 
                 # Obtener todas las variables clasificadas por v_msg_id
-                c.execute("SELECT v_msg_id, v_id, v_name, v_default, v_direction, v_is_signed, v_mask, v_offset, v_mul, v_div FROM Variable WHERE p_id = ?", (p_id,))
+                c.execute("SELECT v_msg_id, v_id, v_name, v_default, v_direction, v_is_signed, v_mask, v_offset, v_mul, v_div FROM Variable WHERE p_id = ?",
+                          (p_id,))
                 variables = c.fetchall()
 
                 # Obtener todas las funciones clasificadas por f_msg_id
@@ -2624,18 +2641,26 @@ class Database(object):
                 # Agrupar las variables por v_msg_id
                 for variable in variables:
                     v_id = variable["v_id"]
-                    #if v_id not in resultados[p_id]["variables"]:
-                    #    resultados[p_id]["variables"][v_id] = []
-                    #resultados[p_id]["variables"][v_id].append({"ids": variable["v_id"], "name":variable["v_name"], "frame":variable["v_msg_id"], "value": variable["v_value"], "bits": variable["v_bits"], "direction": variable["v_type"], "signed":variable["v_is_signed"], "mask":variable["v_mask"]})
-                    resultados[p_id]["variables"][v_id] = {"ids": variable["v_id"], "name":variable["v_name"], "frame":variable["v_msg_id"], "value": variable["v_default"], "direction": variable["v_direction"], "signed":variable["v_is_signed"], "mask":variable["v_mask"], "offset":variable["v_offset"], "mult":variable["v_mul"], "div":variable["v_div"]}
+                    resultados[p_id]["variables"][v_id] = {
+                        "ids": variable["v_id"],
+                        "name":variable["v_name"],
+                        "frame":variable["v_msg_id"],
+                        "value": variable["v_default"],
+                        "direction": variable["v_direction"],
+                        "signed":variable["v_is_signed"],
+                        "mask":variable["v_mask"],
+                        "offset":variable["v_offset"],
+                        "mult":variable["v_mul"],
+                        "div":variable["v_div"]}
 
                 # Agrupar las funciones por f_msg_id
                 for funcion in funciones:
                     f_id = funcion["f_id"]
-                    #if f_id not in resultados[p_id]["functions"]:
-                    #    resultados[p_id]["functions"][f_id] = []
-                    #resultados[p_id]["functions"][f_id].append({"ids": funcion["f_id"], "name":funcion["f_name"], "frame":funcion["f_msg_id"],"direction":"0", "value": funcion["f_value"], "bits": funcion["f_bits"], "signed":funcion["f_is_signed"], "mask":funcion["f_mask"]})
-                    resultados[p_id]["functions"][f_id] = {"ids": funcion["f_id"], "name":funcion["f_name"], "description":funcion["f_description"], "frame":funcion["f_msg_id"]}
+                    resultados[p_id]["functions"][f_id] = {
+                        "ids": funcion["f_id"],
+                        "name":funcion["f_name"],
+                        "description":funcion["f_description"],
+                        "frame":funcion["f_msg_id"]}
 
         return resultados
 
@@ -2735,8 +2760,8 @@ class Database(object):
                         variable_dic["offset"] = variable[8]
                         variable_dic["mul"] = variable[9]
                         variable_dic["div"] = variable[10]
-                        variable_dic["tolerance"] = variable[11]
-                        variable_dic["p_id"] = variable[12]
+                        variable_dic["p_id"] = variable[11]
+                        # variable_dic["tolerance"] = variable[11]
                         all_variables[variable[1]] = variable_dic
 
                     protocol_dic["Variables"] = all_variables

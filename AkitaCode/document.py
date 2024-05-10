@@ -1,6 +1,13 @@
-from .line import *
-from .bd import *
-from .protocol import *
+from .protocol import VECTOR_ARGUMENT_DATATYPE, VECTOR_FUNCTION_DATATYPE, VECTOR_ENVIROMENT_DATATYPE
+from .protocol import VECTOR_RX_VARIABLE_DATATYPE, VECTOR_TX_VARIABLE_DATATYPE, VECTOR_SITUATION_DATATYPE
+from .protocol import Vector, Protocol
+from .instances import Instance
+from .instances import ForInstance, TimeInstance, EndInstance
+from .instances import VariableInstance, FunctionInstance
+from .instances import ProtocolInstance, EnviromentInstance, SituationInstance
+from .instances import SkipInstance, EndInstance
+from .line import Line
+from .bd import Database
 from .messages import StatusMessage, EOPMessage
 from .conditionals import generate_combinations
 from pathlib import Path
@@ -14,7 +21,9 @@ VERSION = "2.0.6"
 
 class Document(object):
     """
-    La classe ``Document`` permet comprovar ràpidament la sintaxi dels documents de testeig i generar un testbench binari executable. Aquest mòdul requereix la classe "Line" (veure :doc:`mòdul Line <line>`), la qual també està documentada i pot gestionar la informació continguda en un objecte de la classe "Line" eficientment.
+    La classe ``Document`` permet comprovar ràpidament la sintaxi dels documents de testeig i
+    generar un testbench binari executable. Aquest mòdul requereix la classe "Line" (veure :doc:`mòdul Line <line>`),
+    la qual també està documentada i pot gestionar la informació continguda en un objecte de la classe "Line" eficientment.
     """
 
     def __init__(self, file="", db="") -> None:
@@ -44,8 +53,8 @@ class Document(object):
                 self.__db = Database(db)
                 with open(file, "r") as f:
                     nline = 1
-                    for l in f:
-                        line_instance = Line(n=nline, line=l)
+                    for f_line in f:
+                        line_instance = Line(n=nline, line=f_line)
                         if not line_instance.have_error():
                             converted_instance = line_instance.convert()
                             if converted_instance.is_error():
@@ -165,7 +174,7 @@ class Document(object):
             elif level == 5:
                 if isinstance(instance,(VariableInstance, FunctionInstance)):
                     if time_statement:
-                        for_instance.nsituations += 1 
+                        for_instance.nsituations += 1
                     time_statement = False
 
                 elif isinstance(instance,TimeInstance):
@@ -185,7 +194,8 @@ class Document(object):
                         q.put(
                             StatusMessage(
                                 msgtype="StructureError",
-                                msg="End instance not expected after Time instance. Must be declare variables or functions before End instance after Time instance.",
+                                msg="""End instance not expected after Time instance.
+                                Must be declare variables or functions before End instance after Time instance.""",
                                 return_code=15,
                                 nline=instance.nline)
                         )
@@ -323,13 +333,13 @@ class Document(object):
                         q.put(
                             StatusMessage(
                                 msgtype="ValueError",
-                                msg=f"Unexpected number of bits.",
+                                msg="Unexpected number of bits.",
                                 return_code=23,
                                 nline=instance.nline
                             )
                         )
                         return 23
-                except:
+                except Exception:
                     v_value:str = instance.value
                     # print(v_value)
                     if (v_value == "True" and nbits == 1) or (v_value == "False" and nbits == 1) or (v_value is None):
@@ -357,7 +367,8 @@ class Document(object):
                             q.put(
                                 StatusMessage(
                                     msgtype="ValueError",
-                                    msg=f"Value of {v_value} cannot be used as the value of variable {instance.name} because output assignment is not allowed.",
+                                    msg=f"""Value of {v_value} cannot be used as the value of variable {instance.name} 
+                                    because output assignment is not allowed.""",
                                     return_code=25,
                                     nline=instance.nline
                                 )
@@ -377,7 +388,8 @@ class Document(object):
                             q.put(
                                 StatusMessage(
                                     msgtype="ValueError",
-                                    msg=f"Value of {v_value} cannot be used as the value of variable {instance.name} because they differ in the type of variable.",
+                                    msg=f"""Value of {v_value} cannot be used as the value of variable {instance.name} 
+                                    because they differ in the type of variable.""",
                                     return_code=27,
                                     nline=instance.nline
                                 )
@@ -537,7 +549,8 @@ class Document(object):
                                     q.put(
                                         StatusMessage(
                                             msgtype="ValueError",
-                                            msg=f"Value of {arg_value} cannot be used as the value of argument {arg_name} because output assignment is not allowed.",
+                                            msg=f"""Value of {arg_value} cannot be used as the value of argument {arg_name} 
+                                            because output assignment is not allowed.""",
                                             return_code=38,
                                             nline=instance.nline
                                         )
@@ -557,7 +570,8 @@ class Document(object):
                                     q.put(
                                         StatusMessage(
                                             msgtype="ValueError",
-                                            msg=f"Value of {v_value} cannot be used as the value of argument {arg_name} because they differ in the type of variable.",
+                                            msg=f"""Value of {v_value} cannot be used as the value of argument {arg_name} 
+                                            because they differ in the type of variable.""",
                                             return_code=40,
                                             nline=instance.nline
                                         )
@@ -612,7 +626,7 @@ class Document(object):
                             )
                         )
                         return 44
-                    const_vars[item] = None                
+                    const_vars[item] = None
             
             elif isinstance(instance, EndInstance):
                 if (inside_for and layer == 1) or (not inside_for and layer == 2):
@@ -649,12 +663,12 @@ class Document(object):
         return 2
 
 
+    # def makec(self, q:Queue, pathname:Path|str, emulate:bool=False, autoclose:bool=False) -> int:
 
-    def makec(self,q:Queue,pathname:Path|str,emulate:bool=False,autoclose:bool=False) -> int:
+    def makec(self, q:Queue, pathname:Path|str, autoclose:bool=False) -> int:
         """
         Crea el document executable per la realització de la validació.
         """
-        emu = emulate
         p_id = None
         protocol = None
         exportable = []
@@ -703,7 +717,8 @@ class Document(object):
                 if not in_for:
                     exportable += [Vector(instance.ids,VECTOR_FUNCTION_DATATYPE,None)]
                     for arg in tuple(instance.arguments.keys()):
-                        exportable += [Vector(ids=self.__db.get_argument_id(instance.ids,arg),data_type=VECTOR_ARGUMENT_DATATYPE,value=instance.arguments[arg])]
+                        exportable += [
+                            Vector(ids=self.__db.get_argument_id(instance.ids,arg),data_type=VECTOR_ARGUMENT_DATATYPE,value=instance.arguments[arg])]
                 else:
                     # Recorrem el llistat de situacions
                     for i in range(current_for_situation-1,len(for_situations),for_number_of_situations):
@@ -713,7 +728,8 @@ class Document(object):
                                 for_situations[i]["**functions"][instance.name][argument] = instance.arguments[argument]
                             else:
                                 for_situations[i]["**functions"][instance.name][argument] = for_situations[i][instance.arguments[argument]]
-                            # Es possible que pugui donar error d'indexació quan s'intenta afegir el valor d'una variable anterior definida a l'hora de passar-ho com argument.
+                            # Es possible que pugui donar error d'indexació quan s'intenta afegir el valor d'una variable anterior 
+                            # definida a l'hora de passar-ho com argument.
                             # Intentar detectar l'error i, si es possible, manipular-ho amb conseqüència.
 
             elif isinstance(instance, EndInstance):
@@ -722,7 +738,8 @@ class Document(object):
                     in_for = False
                     curr_env_name = None
                     # Itera per totes les situacions
-                    for i in range(0, len(for_situations)):
+                    # for i in range(0, len(for_situations)):
+                    for i, _ in enumerate(for_situations):
                         if time.perf_counter()-timeA >= 1:
                             timeTotal += time.perf_counter()-timeA
                             timeA = time.perf_counter()
@@ -746,7 +763,7 @@ class Document(object):
                             
                         # Creem els Vectors de les funcions
                         sit_fn = [element for element in list(for_situations[i]["**functions"].keys())]
-                            # Si un argument depén d'una variable, s'ha de comprovar.
+                        # Si un argument depén d'una variable, s'ha de comprovar.
                         for fn in sit_fn:
                             fn_id = self.__db.get_function_id(self.__protocol_id,fn)
                             exportable += [Vector(
@@ -756,7 +773,8 @@ class Document(object):
                             )]
                             fn_arg_names = self.__db.get_arguments_from_function(fn_id)
                             fn_arg_id = self.__db.get_all_argument_id_from_function(fn_id)
-                            for arg in range(len(fn_arg_id)):
+                            # for arg in range(len(fn_arg_id)):
+                            for arg, _ in enumerate(fn_arg_id):
                                 exportable += [Vector(
                                     ids=fn_arg_id[arg],
                                     data_type=VECTOR_ARGUMENT_DATATYPE,
@@ -821,8 +839,8 @@ class Document(object):
                 )
             return 46
         
-
-    def make(self,q:Queue,pathname:Path|str,emulate:bool=False,autoclose:bool=False):
+    # def make(self,q:Queue,pathname:Path|str,emulate:bool=False,autoclose:bool=False):
+    def make(self, q:Queue, pathname:Path|str, emulate:bool=False, autoclose:bool=False):
         """
         Compila un fitxer ATD d'AkitaCode.
         """

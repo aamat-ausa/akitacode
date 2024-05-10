@@ -1,7 +1,7 @@
 import operator
 import copy
 from .bd import Database
-from itertools import product, zip_longest
+from itertools import product
 
 # Parte 1: Generación de combinaciones
 def generate_combinations(database:Database, protocol_id:int, iterlist:list[str], num_situations:int):
@@ -12,10 +12,8 @@ def generate_combinations(database:Database, protocol_id:int, iterlist:list[str]
     for var in var_ids:
         if var is None:
             return None
-    
     # Obtenim tota la informació de les variables de iterlist.
     all_var_info = [database.get_info_from_variable(v_id=ids) for ids in var_ids]
-
     # Filtrem la informació de les variables de iterlist amb només la informació necessaria (0.is_signed,1.nºbits,2.factor multiplicador,3.factor divisor).
     need_var_info = [(d["variable_is_signed"],d["variable_mask"].count("1"),d["variable_mul"],d["variable_div"]) for d in all_var_info]
     # Realitzem el càlcul en funció de si la variable és signed o no.

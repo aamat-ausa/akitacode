@@ -7,7 +7,7 @@ def to_signed_format(n):
     :return: Representació en binari signat en complement a dos o False si n no és un enter negatiu.
     :rtype: int (or False)
     """
-    if type(n) == int:
+    if isinstance(n, int):
         if n < 0:
             nstr = "{0:b}".format(n)
             aux = int(nstr[1:],2)
@@ -21,7 +21,7 @@ def to_signed_format(n):
         else:
             return False
     else:
-        False
+        return False
 
 
 
@@ -44,20 +44,18 @@ def to_int_format(n):
                     newval -= 2**((len(nstr)-1)-i)*int(nstr[i])
                 else:
                     newval += 2**((len(nstr)-1)-i)*int(nstr[i])
-            
             return newval
-            
         else:
             return False
     else:
         return False
     
 
-def list_to_int(l:list):
+def list_to_int(inlist:list):
     """
     Converteix una llista de enters compressos entre 0-255, en un enter.
     """
-    return int.from_bytes(bytes(l))
+    return int.from_bytes(bytes(inlist))
 
 
 def ss_to_signed_format(n):

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='AkitaCode',
-    version='2.0.7',
+    version='2.0.8',
     packages=find_packages(),
     install_requires=[
         'python-can==4.2.2',

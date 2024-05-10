@@ -32,8 +32,8 @@ class Vector(object):
         Retorna un string informatiu de la informació del vector.
         """
         str(dict(ids=self.ids,datatype=self.datatype,value=self.value))
-        
-        
+
+
     def __repr__(self) -> str:
         """
         Retorna representada la informació del vector.

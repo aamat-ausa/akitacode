@@ -23,7 +23,6 @@ class Instance(object):
 
   def is_error(self) -> bool:
       return self.error
-  
 
   def get_error(self) -> str|None:
       return self.error_msg
@@ -69,7 +68,7 @@ class ProtocolInstance(Instance):
         try:
             self.name = line_parsed[2]
         except Exception:
-            self.error = True 
+            self.error = True
 
 
 class VariableInstance(Instance):

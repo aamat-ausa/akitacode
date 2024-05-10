@@ -3,13 +3,13 @@ class State(object):
     Representa la classe Estat de Línia. Permet crear diferents estats en funció de la línia del document específica.
     D'aquesta manera, es permet l'abstracció de la màquina d'estats durant la sintaxi d'una línia.
     """
-    def __init__(self, id:int, required:bool=True, strict:bool=True, command:str|None=None, allow_reserved_words=False, error_msg:str="Undefined error."):
+    def __init__(self, ids:int, required:bool=True, strict:bool=True, command:str|None=None, allow_reserved_words=False, error_msg:str="Undefined error."):
         """
         Crea una instància de la classe State.
         """
-        self._id:int = id
+        self._id:int = ids
         self._required = required
-        self._origin:bool = (command == None and strict is True and required is True) #(command == None and strict == True and required==True)
+        self._origin:bool = (command is None and strict is True and required is True) #(command == None and strict == True and required==True)
         self._strict:bool = strict
         self._command:str|None = command
         self._next:list[State] = []
@@ -51,7 +51,7 @@ class State(object):
                         self._error_command = command
                         return False
                     elif state._strict and command == state._command:
-                        return True     
+                        return True
         for state in self._next:
             if state._required:
                 if not state._strict and command != state._command and command not in self._reserved_words:
@@ -66,7 +66,7 @@ class State(object):
         self._error = True
         self._error_command = command
         return False
-        
+
 
     def get_next(self, command:str|None):
         """

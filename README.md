@@ -4,6 +4,12 @@ You can consult the documentation for this library in the [Wiki page of the offi
 
 ## History log
 
+### Version 2.0.8
+
+- Fixed a bug during database export.
+
+- Improved code readability and style.
+
 ### Version 2.0.7
 
 - Fixed the problem with enviroments vector constants during method ``make()`` AKITA Testbench Document.
@@ -25,7 +31,6 @@ You can consult the documentation for this library in the [Wiki page of the offi
 - Fixed the error during the generation of the AKITA file. No data was imported into the protocol datablock. The protocol datablock was not blocked.
 
 - The automatic capitalization rule is disabled when adding or modifying protocols, variables, functions, and arguments.
-
 
 ### Version 2.0.4
 
@@ -56,6 +61,7 @@ You can consult the documentation for this library in the [Wiki page of the offi
 ### Version 2.0.2-beta
 
 - Fixed problem during *for* line statement. Now, *for* statements can be used as following:
+
 ```
 for each case of ( BAT_Temperature , BAT_SOH , BAT_SOC ) do
 ```

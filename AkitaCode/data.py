@@ -1,12 +1,14 @@
 from .numerics import to_signed_format, to_int_format
-from .mask import *
+from .mask import Mask
 
 
 class Data(object):
     """
-    La classe Data representa la unitat mínima d'informació que podem extreure d'una trama. Emmagatzema la informació pertinent d'una variable o funció per posteriorment poder obtenir o col·locar informació a una trama determinada.
-
+    La classe Data representa la unitat mínima d'informació que podem extreure d'una trama.
+    Emmagatzema la informació pertinent d'una variable o funció per posteriorment poder obtenir
+    o col·locar informació a una trama determinada.
     """
+
     def __init__(self, ids:int, name:str, mask:bytes, value:int, is_signed:bool=False) -> None:
         """
         Crea una instància de l'objecte Data. 
@@ -48,7 +50,8 @@ class Data(object):
 
     def _encapsulate(self, mask:Mask, val:int, n_bits:int) -> int:
         """
-        El mètode d'encapsulació privat permet introduir el valor donat en la màscara assignada. Aquest mètode permet comprovar ràpidament si el valor rebut és el que s'espera.
+        El mètode d'encapsulació privat permet introduir el valor donat en la màscara assignada.
+        Aquest mètode permet comprovar ràpidament si el valor rebut és el que s'espera.
 
         :param mask: Màscara sobre la que realitzar l'encapsulat del valor.
         :type mask: Mask

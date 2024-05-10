@@ -1,12 +1,11 @@
 from .keys import State
 from .line_state_machine import create_line_state_machine
-from .instances import *
+from .instances import Instance, EndInstance, ForInstance, VariableInstance
+from .instances import SituationInstance, FunctionInstance, EnviromentInstance
+from .instances import ProtocolInstance, ErrorInstance, SkipInstance, TimeInstance
+from .instances import UndefinedInstance
 from .messages import StatusMessage
-"""
-Este modulo contine la clase Line que nos ayuda, primeramente a validar y comprobar 
-la sintaxis de una forma mucho más cómoda, dividiendo en secciones las líneas de código 
-escritas en un documento.
-"""
+
 
 class Line(object):
     """
@@ -32,7 +31,7 @@ class Line(object):
         self._used_reserved_word = False
         self.__validate()
 
-    
+
     def __parser_line(self,line:str) -> list[str]:
         """
         Mètode privat que parseja la línia instanciada.
@@ -43,7 +42,7 @@ class Line(object):
         :rtype: list
         """
         return line.split()
-        
+
     
     def __validate(self) -> bool:
         """
@@ -145,25 +144,25 @@ class Line(object):
         :rtype: ProtocolInstance|VariableInstance|FunctionInstance|EndInstance|EnviromentInstance|
         """
         if not self.have_error() and not self.ignore():
-            l = self.get_parsed()
-            if "//" in l:
+            objline = self.get_parsed()
+            if "//" in objline:
                 return SkipInstance(self._number_line)
-            elif "import" and "protocol" in l:
-                return ProtocolInstance(line_parsed=l,nline=self._number_line)
-            elif "var" in l:
-                return VariableInstance(line_parsed=l,nline=self._number_line)
-            elif "fn" in l:
-                return FunctionInstance(line_parsed=l,nline=self._number_line)
-            elif "create" and "enviroment" in l:
-                return EnviromentInstance(line_parsed=l,nline=self._number_line)
-            elif "create" and "situation" in l:
-                return SituationInstance(line_parsed=l,nline=self._number_line)
-            elif "for" in l:
-                return ForInstance(line_parsed=l, nline=self._number_line)
-            elif "end" in l:
-                return EndInstance(line_parsed=l,nline=self._number_line)
-            elif "time" in l:
-                return TimeInstance(line_parsed=l,nline=self._number_line)
+            elif "import" and "protocol" in objline:
+                return ProtocolInstance(line_parsed=objline,nline=self._number_line)
+            elif "var" in objline:
+                return VariableInstance(line_parsed=objline,nline=self._number_line)
+            elif "fn" in objline:
+                return FunctionInstance(line_parsed=objline,nline=self._number_line)
+            elif "create" and "enviroment" in objline:
+                return EnviromentInstance(line_parsed=objline,nline=self._number_line)
+            elif "create" and "situation" in objline:
+                return SituationInstance(line_parsed=objline,nline=self._number_line)
+            elif "for" in objline:
+                return ForInstance(line_parsed=objline, nline=self._number_line)
+            elif "end" in objline:
+                return EndInstance(line_parsed=objline,nline=self._number_line)
+            elif "time" in objline:
+                return TimeInstance(line_parsed=objline,nline=self._number_line)
             else:
                 self._error = True
                 self._error_msg = """

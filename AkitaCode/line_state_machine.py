@@ -10,7 +10,6 @@ def create_line_state_machine():
     """
     # Creació de l'origen de la màquina d'estats.
     root = State(0,error_msg="Unexpected keyword ''{}'' at first word of line.")
-    
     # Creació dels Estats de la comanda import.
     import_instance = State(
         id=1000,
@@ -25,7 +24,7 @@ def create_line_state_machine():
     
     import_name_protocol = State(
         id=1002,
-        command="<name>", 
+        command="<name>",
         strict=False,
         error_msg="More than expected statements. ''{}'' not expected.")
     

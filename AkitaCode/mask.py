@@ -2,25 +2,28 @@ MAX_MASK_VALUE = 2**64
 
 class Mask(object):
     """
-    La classe "Mask" proporciona les funcionalitats necessàries per a poder comprovar i encapsular la informació que es vol validar en una futura trama. És principalment responsable de verificar que no hi hagi conflictes entre les variables definides en el document, ni repeticions de definició.
+    La classe "Mask" proporciona les funcionalitats necessàries per a poder comprovar
+    i encapsular la informació que es vol validar en una futura trama. És principalment
+    responsable de verificar que no hi hagi conflictes entre les variables definides en
+    el document, ni repeticions de definició.
     """
     def __init__(self, val=MAX_MASK_VALUE-1):
         """
-        Crea una nova instància de la classe "Mask" amb el valor de màscara <val>. El valor màxim de la màscara és (2 ** 64) - 1. Si s'excedeix, s'establirà el valor màxim com valor de la màscara.
+        Crea una nova instància de la classe "Mask" amb el valor de màscara <val>. 
+        El valor màxim de la màscara és (2 ** 64) - 1. Si s'excedeix, s'establirà el valor màxim com valor de la màscara.
 
         :param val: Estableix un valor a la màscara.
         :type val: int (o bytes)
         """
-        if type(val) == str:
+        if isinstance(val, str):
             v = int(val)
-        elif type(val) == bytes:
+        elif isinstance(val, bytes):
             v = int.from_bytes(val)
-        elif type(val) == int:
+        elif isinstance(val, int):
             v = val
         else:
             v = MAX_MASK_VALUE-1
         self.val = v
-        
 
 
     def __int__(self):
@@ -33,7 +36,6 @@ class Mask(object):
         return self.val
 
 
-
     def get_mask(self):
         """
         Retorna en bytes el valor de la màscara.
@@ -42,7 +44,6 @@ class Mask(object):
         :rtype: bytes
         """
         return self.val.to_bytes(8)
-
 
 
     def __and__(self, othermask):

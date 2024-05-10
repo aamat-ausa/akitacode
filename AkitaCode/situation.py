@@ -5,7 +5,8 @@ from .protocol import VECTOR_FUNCTION_DATATYPE
 
 class Situation(object):
     """
-    La classe "Situation" crea un entorn virtual de situació (VSE - Virtual Situation Environment) que ens permet emmagatzemar objectes "Frame" i identificar aquests frames amb un nom de situació.
+    La classe "Situation" crea un entorn virtual de situació (VSE - Virtual Situation Environment)
+    que ens permet emmagatzemar objectes "Frame" i identificar aquests frames amb un nom de situació.
     """
     def __init__(self, name, time) -> None:
         """
@@ -26,7 +27,8 @@ class Situation(object):
 
         .. seealso::
 
-            Aquesta funció retorna els mateixos codi d'error que la funció ``add_to_frame()``, ja que aquesta és la que executa la inserció de la dada.
+            Aquesta funció retorna els mateixos codi d'error que la funció ``add_to_frame()``,
+            ja que aquesta és la que executa la inserció de la dada.
 
             
         :param f: Objecte Trama que es vol afegir a la situació.

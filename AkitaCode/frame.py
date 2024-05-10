@@ -1,5 +1,7 @@
+from .protocol import VECTOR_ARGUMENT_DATATYPE, VECTOR_FUNCTION_DATATYPE
+from .protocol import VECTOR_RX_VARIABLE_DATATYPE, VECTOR_TX_VARIABLE_DATATYPE
+from .protocol import Vector, Protocol
 from .data import Data, Function, Argument, Variable
-from .protocol import *
 
 class Frame(object):
     """
@@ -81,7 +83,6 @@ class Frame(object):
             return 1
         if not isinstance(protocol, Protocol):
             return 2
-        
         # Cerquem al protocol l'existencia de la informació que conté el vector.
         info = protocol.search(vector)
         if isinstance(info, bool):
@@ -135,7 +136,9 @@ class Frame(object):
                     return 7
                 return 8
             else:
-                if (self._can_id == info["msg_id"]) and ((vector.datatype == VECTOR_TX_VARIABLE_DATATYPE and not self._is_response) or (vector.datatype == VECTOR_RX_VARIABLE_DATATYPE and self._is_response)):
+                if (self._can_id == info["msg_id"]) and (
+                    (vector.datatype == VECTOR_TX_VARIABLE_DATATYPE and not self._is_response) or 
+                    (vector.datatype == VECTOR_RX_VARIABLE_DATATYPE and self._is_response)):
                     v = Variable(
                         ids=vector.ids,
                         name=info["name"],

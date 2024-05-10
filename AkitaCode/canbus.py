@@ -17,14 +17,19 @@ def _get_message(msg):
 
 class Bus(object):
     """
-    La classe Bus permet establir una connexió en un canal de comunicació CAN assignant un identificador a si mateixa. De moment, aquesta classe només accepta el controlador utilitzat per PEAK Systems. És possible que en futures actualitzacions es puguin acceptar altres interfícies. Si us plau, tingueu-ho en compte abans d'utilitzar l'aplicació.\n\r
+    La classe Bus permet establir una connexió en un canal de comunicació CAN assignant un identificador
+      a si mateixa. De moment, aquesta classe només accepta el controlador utilitzat per PEAK Systems.
+      És possible que en futures actualitzacions es puguin acceptar altres interfícies. Si us plau,
+      tingueu-ho en compte abans d'utilitzar l'aplicació.\n\r
     
     .. note::
-        Tingueu en compte que actualment només s'accepta el controlador PCAN. Podeu obtenir més informació sobre com instal·lar el controlador PCAN al següent enllaç `<https://www.peak-system.com/Drivers.523.0.html?&L=1>`_.
+        Tingueu en compte que actualment només s'accepta el controlador PCAN. Podeu obtenir més informació
+        sobre com instal·lar el controlador PCAN al següent enllaç `<https://www.peak-system.com/Drivers.523.0.html?&L=1>`_.
     """
     def __init__(self, bustype="pcan", channel="1", bitrate=250000, filters=None):
         """
-        Crea una nova instància de la classe Bus. La seva inicialització permet modificar el canal, la taxa de dades i afegir filtres al canal de comunicació.
+        Crea una nova instància de la classe Bus. La seva inicialització permet modificar el canal,
+        la taxa de dades i afegir filtres al canal de comunicació.
 
         :param bustype: Estableix el controlador utilitzat per establir la comunicació.
         :type bustype: str
@@ -36,15 +41,20 @@ class Bus(object):
         :type filters: list (or None)
 
         .. note::
-            Aquesta funció crea per defecte una instància del controlador de comunicacions CAN de PCAN. Actualment, només és compatible amb el controlador PCAN. Per obtenir més informació sobre com instal·lar el controlador PCAN visiteu el següent enllaç:
+            Aquesta funció crea per defecte una instància del controlador de comunicacions CAN de PCAN.
+            Actualment, només és compatible amb el controlador PCAN. Per obtenir més informació sobre
+            com instal·lar el controlador PCAN visiteu el següent enllaç:
             `<https://www.peak-system.com/Drivers.523.0.html?&L=1>`_
 
         .. warning::
-            Tingueu en compte que l'ús de canals incorrectes o la configuració inadequada del controlador poden provocar mal funcionament del programa i danys en els dispositius connectats.
+            Tingueu en compte que l'ús de canals incorrectes o la configuració inadequada del controlador
+            poden provocar mal funcionament del programa i danys en els dispositius connectats.
 
         .. seealso::
             * :py:func:`_get_message`: Funció privada que conté les dades del missatge enviat o rebut.
-            * :py:class:`can.Bus`: Classe de llibreria ``python-can`` que proporciona una API genèrica per comunicar dispositius amb controladors CAN. Podeu consultar la seva documentació `en aquest enllaç <https://python-can.readthedocs.io/en/stable/>`_.
+            * :py:class:`can.Bus`: Classe de llibreria ``python-can`` que proporciona una API genèrica per
+            comunicar dispositius amb controladors CAN. Podeu consultar la seva documentació `en aquest enllaç
+            <https://python-can.readthedocs.io/en/stable/>`_.
 
         """
         logging.info("Initializing CANbus...")
@@ -55,7 +65,7 @@ class Bus(object):
         logging.info("Inizializing notifier...")
         self.notifier = can.Notifier(self.bus, [_get_message, self.buffer])
 
-    def send_message(self, message_id=0x1, mesg=[1,2,3,4,5,6,7,8], extended=False, remote=False):
+    def send_message(self, message_id=0x1, mesg=(1,2,3,4,5,6,7,8), extended=False, remote=False):
         """
         Aquest mètode permet transmetre un missatge a través del bus CAN establert.
 
@@ -78,21 +88,22 @@ class Bus(object):
             El valor per defecte de 'message_id' és 0x1. No és recomanable utilitzar-lo a menys que es disposi d'un identificador específic.
         """
         try:
-            msg = can.Message(arbitration_id=message_id, data=mesg, is_extended_id=extended, is_remote_frame=remote)
+            msg = can.Message(arbitration_id=message_id, data=list(mesg), is_extended_id=extended, is_remote_frame=remote)
             try:
                 self.bus.send(msg)
                 return True
             except can.CanError:
                 return False
-        except:
+        except Exception:
             return False
-        
+
     def read_input(self, timeout:float = 0.5):
         """
         Aquest mètode permet obtenir un missatge del bus CAN establert, seguint els filtres especificats durant la inicialització del bus.
 
         .. warning::
-            Aquesta funció no és bloquejant. En un futur és possible que aquesta funció esdevingui bloquejant. Si us plau, tingueu en compte això quan realitzeu accions en altres aplicacions.
+            Aquesta funció no és bloquejant. En un futur és possible que aquesta funció esdevingui bloquejant.
+            Si us plau, tingueu en compte això quan realitzeu accions en altres aplicacions.
 
         :return: Objecte que conté les dades del missatge del frame CAN.
         :rtype: can.Message (object)

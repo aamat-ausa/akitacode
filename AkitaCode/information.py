@@ -2,7 +2,7 @@ TESTBENCH_RESULT_OK = "ok"
 TESTBENCH_RESULT_NOK = "nok"
 
 class Information(object):
-    def __init__(self, ids, situation, type, msg_id, frame, mask, var, expected, val):
+    def __init__(self, ids, situation, itype, msg_id, frame, mask, var, expected, val):
         """
         Crea una instancia de la classe Information amb les dades assignades.
 
@@ -27,7 +27,7 @@ class Information(object):
         """
         self.ids = ids
         self.situation = situation
-        self.type = type
+        self.type = itype
         self.msg_id = msg_id
         self.frame = frame
         self.mask = mask
@@ -37,7 +37,7 @@ class Information(object):
         self.result = TESTBENCH_RESULT_OK if self.expected == self.val else TESTBENCH_RESULT_NOK
 
 
-    def __dict__(self):
+    def dict(self):
         """
         Retorna un diccionari amb les dades que conté la classe Information.
         """
@@ -50,6 +50,3 @@ class Information(object):
         d["Received Value"] = self.val
         d["Check"] = self.result
         return d
-    
-    def dict(self):
-        return self.__dict__()
