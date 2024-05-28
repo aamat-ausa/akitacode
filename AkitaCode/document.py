@@ -16,7 +16,7 @@ import pickle
 import time
 import secrets
 
-VERSION = "2.0.6"
+VERSION = "2.0.10"
 
 
 class Document(object):
@@ -533,7 +533,7 @@ class Document(object):
                                     )
                                 )
                                 return 37
-                        except:
+                        except Exception:
                             v_value = instance.arguments[arg]
                             if (v_value == "True" and nbits.count("1") == 1) or (v_value == "False" and nbits.count("1") == 1) or (v_value is None):
                                 instance.arguments[arg] = 1 if v_value == "True" else 0

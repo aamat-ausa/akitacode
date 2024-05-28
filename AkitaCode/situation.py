@@ -41,7 +41,7 @@ class Situation(object):
         info = protocol.search(vector)
         if vector.datatype != VECTOR_FUNCTION_DATATYPE:
             for e in self._frames:
-                if info["msg_id"] == e.get_can_id():
+                if int(info["msg_id"]) == e.get_can_id():
                     return e.add_to_frame(vector,protocol)
             f=Frame()
             f.add_to_frame(vector,protocol)
