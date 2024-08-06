@@ -16,7 +16,7 @@ import pickle
 import time
 import secrets
 
-VERSION = "2.0.10"
+VERSION = "2.0.11"
 
 
 class Document(object):

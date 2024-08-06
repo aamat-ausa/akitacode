@@ -1,4 +1,4 @@
-from .numerics import to_signed_format, to_int_format
+from .numerics import to_signed_format, to_int_format, convert_hex
 from .mask import Mask
 
 
@@ -107,10 +107,7 @@ class Data(object):
         for i in list(range(len(mask_val))):
             if mask_val[i] == "1":
                 new_val += rec_str[i]
-
-        if self.get_value_is_signed():
-            return to_int_format(int(new_val,2))
-        return int(new_val,2)
+        return convert_hex(value=hex(int(new_val,2)),bits=len(self.mask),signed=True if self.get_value_is_signed() else False)
 
 
     def check_value_received(self, rxframe_value:int) -> int:
@@ -246,3 +243,12 @@ class Function(object):
     def __init__(self,ids:int,name:str) -> None:
         self.ids:int = ids
         self.name:str = name
+
+
+# d_unsigned = Data(ids=1, name="Coolant_Temperature", mask=bytes([0x0F]), value=1, is_signed=False)
+# d_signed = Data(ids=1, name="Oil_Temperature", mask=bytes([0x0F]), value=-1, is_signed=True)
+
+# print(f"Unsigned value: {d_unsigned._uncapsulate(1)}")
+# print(f"Signed value: {d_signed._uncapsulate(1)}")
+# print(f"Unsigned expected value: {d_unsigned.get_expected_value()}")
+# print(f"Signed expected value: {d_signed.get_expected_value()}")

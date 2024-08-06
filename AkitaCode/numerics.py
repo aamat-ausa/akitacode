@@ -98,4 +98,32 @@ def ss_to_int_format(n):
         else:
             return False
     else:
-        return False  
+        return False
+    
+
+
+def convert_hex(value: str, bits: int, signed: bool = False) -> int:
+    """
+    Convierte un valor hexadecimal a su valor con signo o sin signo.
+    
+    :param value: El valor hexadecimal como string (por ejemplo, "0xFF").
+    :param bits: El tamaño en bits del número (por ejemplo, 8, 16, 32, 64).
+    :param signed: Si es True, interpreta el valor como con signo.
+    :return: El valor entero convertido.
+    """
+    # Convertir el valor hexadecimal a un entero sin signo
+    unsigned_value = int(value, 16)
+    
+    if not signed:
+        return unsigned_value
+    
+    # Calcular el valor con signo
+    sign_bit = 1 << (bits - 1)
+    mask = (1 << bits) - 1
+    
+    if unsigned_value & sign_bit:
+        # Si el bit de signo está establecido, convertir a negativo
+        return unsigned_value - mask - 1
+    else:
+        # Si no, es un valor positivo regular
+        return unsigned_value

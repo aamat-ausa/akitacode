@@ -2773,7 +2773,7 @@ class Database(object):
                         function_dic["id"] = function[0]
                         function_dic["name"] = function[1]
                         function_dic["description"] = function[2]
-                        function_dic["msg_id"] = function[3]
+                        function_dic["msg_id"] = int(function[3])
                         function_dic["p_id"] = function[4]
                         all_functions[function[1]] = function_dic
  
