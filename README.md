@@ -4,6 +4,10 @@ You can consult the documentation for this library in the [Wiki page of the offi
 
 ## History log
 
+### Version 2.0.11
+
+- Fixed problem during analizing testing signed variables.
+
 ### Version 2.0.10
 
 - Fixed an issue when import a Variable or Argument to an existing Frame in a same Situation Instance. This caused the same frame to be sent X times, where X is the number of variables or arguments contained in the CAN frame.
