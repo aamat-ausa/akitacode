@@ -1,5 +1,7 @@
 # AkitaCode Python Library
 
+This library is a derivation of a student work and is maintained by the student. Please respect the authorship licenses. You can see the starting point of the development in the [original link](https://upcommons.upc.edu/handle/2117/394375).
+
 You can consult the documentation for this library in the [Wiki page of the official GitHub repository](https://github.com/alexamatausa/akitacode "AkitaCode GitHub repository").
 
 ## History log
