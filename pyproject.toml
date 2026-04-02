@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "akitacode"
+version = "2.0.12"
+description = "Akitacode parser and compiler."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.optional-dependencies]
+can = [
+    "python-can>=4.4",
+]
+
+[dependency-groups]
+dev = [
+    "setuptools>=69",
+    "wheel",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

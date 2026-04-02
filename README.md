@@ -87,3 +87,39 @@ for each case of ( BAT_Temperature , BAT_SOH , BAT_SOC ) do
 ### Version 2.0.0
 
 - First version.
+
+## Installation
+
+You can install the project from the repository root:
+
+```bash
+pip install .
+```
+
+If you also need CAN bus support:
+
+```bash
+pip install ".[can]"
+```
+
+For development mode:
+
+```bash
+pip install -e .
+```
+
+If you use `uv`, you can prepare the environment for fast local builds with:
+
+```bash
+uv sync --dev
+uv build --no-build-isolation
+```
+
+## Usage
+
+After installation, you can import it from another project:
+
+```python
+import akitacode
+from akitacode.document import Document
+```

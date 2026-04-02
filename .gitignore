@@ -4,3 +4,5 @@
 /build
 /AkitaCode/__pycache__
 API_TOKEN
+/src/akitacode.egg-info
+/src/akitacode/__pycache__
